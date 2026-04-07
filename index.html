@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Wear</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        // Load theme immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/templatemo-crypto-style.css">
+    <link rel="stylesheet" href="css/templatemo-crypto-dashboard.css">
+    <!--
+
+TemplateMo 609 Crypto Vault
+
+https://templatemo.com/tm-609-crypto-vault
+
+-->
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="sidebar logo.png" alt="imagem" style="height: 40px; border-radius: 6px; object-fit: cover;">
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-label">Menu</div>
+                <a href="index.html" class="nav-item active">
+                    <span class="nav-icon material-symbols-outlined">grid_view</span>
+                    Inicio
+                </a>
+                <a href="markets.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">checkroom</span>
+                    Coleção
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">shopping_cart</span>
+                    Carrinho
+                </a>
+            
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="admin.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">shield</span>
+                    Admin
+                </a>
+                <a href="settings.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">person</span>
+                    Meu Perfil
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-right">
+                    <div class="header-search">
+                        <span class="material-symbols-outlined" style="font-size:18px;opacity:.6">search</span>
+                        <input type="text" placeholder="Buscar..." style="width: 700px;">
+                    </div>
+                    <button class="notification-btn">
+                        <span class="material-symbols-outlined" style="font-size:20px">notifications</span>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <img src="logo tech wear.png" alt="imagem" style="height: 28px; border-radius: 6px; object-fit: cover;">
+                </div>
+            </div>
+
+            <!-- Hero Banner -->
+                        <div class="home-hero">
+                <img src="Img grupo.png" class="home-hero-img" alt="Hero">
+                <div class="home-hero-content">
+                    <button class="hero-btn" onclick="window.location.href='markets.html'">INICIAR</button>
+                </div>
+            </div>
+
+            <!-- Image Gallery -->
+            <div class="home-gallery">
+                <a href="markets.html?esporte=corrida" class="gallery-card" style="text-decoration:none;">
+                    <img src="Cara card 01.png" alt="Estilo 1" style="object-fit: cover; object-position: center 20%;">
+                    <div class="gallery-overlay">
+                        <span>Corrida</span>
+                    </div>
+                </a>
+                <a href="markets.html?esporte=basquete" class="gallery-card" style="text-decoration:none;">
+                    <img src="Cara card 2.png" alt="Estilo 2">
+                        <div class="gallery-overlay">
+                        <span>Basquete</span>
+                    </div>
+                </a>
+                <a href="markets.html?esporte=academia" class="gallery-card" style="text-decoration:none;">
+                    <img src="cara card 3.png" alt="Estilo 3">
+                        <div class="gallery-overlay">
+                        <span>Academia</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Copyright -->
+            <footer class="copyright">
+                Tech Wear &copy; 2026 Tech Wear. Designed by Tech Wear Team.
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/produtos.js"></script>
+    <script src="js/templatemo-crypto-script.js"></script>
+</body>
+</html>

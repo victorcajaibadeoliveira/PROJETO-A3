@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Tech Wear</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        // Load theme immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/templatemo-crypto-style.css">
+    <link rel="stylesheet" href="css/templatemo-crypto-pages.css">
+    <!--
+
+TemplateMo 609 Crypto Vault
+
+https://templatemo.com/tm-609-crypto-vault
+
+-->
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="sidebar logo.png" alt="imagem" style="height: 40px; border-radius: 6px; object-fit: cover;">
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-label">Menu</div>
+                <a href="index.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">grid_view</span>
+                    Inicio
+                </a>
+                <a href="markets.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">checkroom</span>
+                    Coleção
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">shopping_cart</span>
+                    Carrinho
+                </a>
+            
+                    </svg>
+                    
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="admin.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">shield</span>
+                    Admin
+                </a>
+                <a href="settings.html" class="logout-btn active" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">person</span>
+                    Meu Perfil
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Meu Perfil</h1>
+                <p>Gerencie seu perfil e informações da conta</p>
+            </div>
+
+            <!-- Settings Tabs -->
+            <div class="settings-tabs">
+                <button class="settings-tab active" data-tab="profile">Perfil</button>
+            </div>
+
+            <!-- Profile Settings -->
+            <div class="settings-content active" id="profile">
+                <div class="card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profileAvatar">AM</div>
+                        <div class="profile-info">
+                            <h2 id="profileNomeDisplay">Carregando...</h2>
+                            <p id="profileEmailDisplay"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Nome</label>
+                            <input type="text" class="form-input" id="perfNome">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sobrenome</label>
+                            <input type="text" class="form-input" id="perfSobrenome">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">E-mail</label>
+                            <input type="email" class="form-input" id="perfEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Telefone</label>
+                            <input type="tel" class="form-input" id="perfTelefone" placeholder="+55 (11) 99999-0000">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Bio</label>
+                            <input type="text" class="form-input" id="perfBio" placeholder="Conte um pouco sobre você...">
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn primary" id="btnSalvarPerfil">Salvar Alterações</button>
+                        <button class="btn" id="btnCancelarPerfil">Cancelar</button>
+                        <button class="btn" style="margin-left:auto; color:#e74c3c; border-color:#e74c3c;" onclick="TechWear.logout()">Sair da conta</button>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="copyright">
+                Tech Wear &copy; 2026 Tech Wear. Designed by Tech Wear Team.
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/produtos.js"></script>
+    <script src="js/templatemo-crypto-script.js"></script>
+    <script>
+    (function() {
+        function showToast(msg) {
+            var existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
+            var t = document.createElement('div');
+            t.className = 'toast-notification';
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:var(--accent-copper,#999);color:#1c1c1e;padding:14px 24px;border-radius:10px;font-weight:600;font-size:14px;z-index:9999;opacity:0;transform:translateY(20px);transition:all .3s ease;font-family:inherit;';
+            document.body.appendChild(t);
+            requestAnimationFrame(function() { t.style.opacity='1'; t.style.transform='translateY(0)'; });
+            setTimeout(function() { t.style.opacity='0'; t.style.transform='translateY(20px)'; setTimeout(function() { t.remove(); }, 300); }, 2500);
+        }
+
+        var PERF_KEY = 'tw_perfil';
+
+        function carregarPerfil() {
+            var sessao = TechWear.getUsuarioLogado();
+            var perfil = JSON.parse(localStorage.getItem(PERF_KEY) || '{}');
+            var nome = perfil.nome || (sessao && sessao.nome) || '';
+            var partes = nome.split(' ');
+            var primeiro = partes[0] || '';
+            var sobrenome = partes.slice(1).join(' ') || '';
+
+            document.getElementById('perfNome').value = primeiro;
+            document.getElementById('perfSobrenome').value = sobrenome;
+            document.getElementById('perfEmail').value = perfil.email || (sessao && sessao.email) || '';
+            document.getElementById('perfTelefone').value = perfil.telefone || '';
+            document.getElementById('perfBio').value = perfil.bio || '';
+
+            var nomeCompleto = (primeiro + ' ' + sobrenome).trim() || 'Usuário';
+            var iniciais = (primeiro[0] || '') + (sobrenome[0] || '');
+            document.getElementById('profileNomeDisplay').textContent = nomeCompleto;
+            document.getElementById('profileEmailDisplay').textContent = perfil.email || (sessao && sessao.email) || '';
+            document.getElementById('profileAvatar').textContent = iniciais.toUpperCase() || 'U';
+        }
+
+        document.getElementById('btnSalvarPerfil').addEventListener('click', function() {
+            var nome = document.getElementById('perfNome').value.trim();
+            var sobrenome = document.getElementById('perfSobrenome').value.trim();
+            var email = document.getElementById('perfEmail').value.trim();
+            if (!nome) { showToast('Preencha o nome'); return; }
+            var perfil = {
+                nome: (nome + ' ' + sobrenome).trim(),
+                email: email,
+                telefone: document.getElementById('perfTelefone').value.trim(),
+                bio: document.getElementById('perfBio').value.trim()
+            };
+            localStorage.setItem(PERF_KEY, JSON.stringify(perfil));
+            var sessao = TechWear.getUsuarioLogado();
+            if (sessao) {
+                sessao.nome = perfil.nome;
+                sessao.email = perfil.email;
+                localStorage.setItem('tw_sessao', JSON.stringify(sessao));
+            }
+            carregarPerfil();
+            showToast('Perfil atualizado!');
+        });
+
+        document.getElementById('btnCancelarPerfil').addEventListener('click', function() {
+            carregarPerfil();
+        });
+
+        carregarPerfil();
+    })();
+    </script>
+</body>
+</html>

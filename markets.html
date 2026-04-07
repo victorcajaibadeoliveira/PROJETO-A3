@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coleção - Tech Wear</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        // Load theme immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/templatemo-crypto-style.css">
+    <link rel="stylesheet" href="css/templatemo-crypto-pages.css">
+    <!--
+
+TemplateMo 609 Crypto Vault
+
+https://templatemo.com/tm-609-crypto-vault
+
+-->
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="sidebar logo.png" alt="imagem" style="height: 40px; border-radius: 6px; object-fit: cover;">
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-label">Menu</div>
+                <a href="index.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">grid_view</span>
+                    Inicio
+                </a>
+                <a href="markets.html" class="nav-item active">
+                    <span class="nav-icon material-symbols-outlined">checkroom</span>
+                    Coleção
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">shopping_cart</span>
+                    Carrinho
+                </a>
+            
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="admin.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">shield</span>
+                    Admin
+                </a>
+                <a href="settings.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">person</span>
+                    Meu Perfil
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Coleção</h1>
+                <p>Explore nossos produtos esportivos</p>
+            </div>
+
+            <!-- Filtros -->
+            <div class="catalog-filters">
+                <div class="filter-search">
+                    <span class="material-symbols-outlined" style="font-size:18px;opacity:.6">search</span>
+                    <input type="text" id="filtroBusca" placeholder="Buscar produto...">
+                </div>
+                <div class="filter-group">
+                    <select id="filtroCategoria" class="filter-select">
+                        <option value="">Todas as Categorias</option>
+                        <option value="camisetas">Camisetas</option>
+                        <option value="calcas">Calças</option>
+                        <option value="jaquetas">Jaquetas</option>
+                        <option value="moletons">Moletons</option>
+                        <option value="shorts">Shorts</option>
+                    </select>
+                    <select id="filtroEsporte" class="filter-select">
+                        <option value="">Todos os Esportes</option>
+                        <option value="corrida">Corrida</option>
+                        <option value="basquete">Basquete</option>
+                        <option value="academia">Academia</option>
+                    </select>
+                    <select id="filtroOrdem" class="filter-select">
+                        <option value="">Ordenar por</option>
+                        <option value="menor">Menor Preço</option>
+                        <option value="maior">Maior Preço</option>
+                        <option value="nome">Nome A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Produtos renderizados via JS -->
+            </div>
+
+            <!-- Modal de Produto -->
+            <div class="product-modal-overlay" id="productModal">
+                <div class="product-modal">
+                    <button class="modal-close" id="modalClose">&times;</button>
+                    <div class="modal-body">
+                        <div class="modal-image" id="modalImage"></div>
+                        <div class="modal-info">
+                            <h2 id="modalNome"></h2>
+                            <p class="modal-desc" id="modalDesc"></p>
+                            <p class="modal-preco" id="modalPreco"></p>
+                            <p class="modal-cor">Cor: <span id="modalCor"></span></p>
+                            <p class="modal-estoque" id="modalEstoque"></p>
+                            <div class="modal-tamanhos">
+                                <label>Tamanho:</label>
+                                <div class="size-options" id="modalTamanhos"></div>
+                            </div>
+                            <div class="modal-qtd">
+                                <label>Quantidade:</label>
+                                <div class="qtd-control">
+                                    <button class="qtd-btn" id="qtdMenos">-</button>
+                                    <span id="qtdValor">1</span>
+                                    <button class="qtd-btn" id="qtdMais">+</button>
+                                </div>
+                            </div>
+                            <button class="add-cart-btn" id="addCartBtn">
+                                <span class="material-symbols-outlined" style="font-size:20px;vertical-align:middle">add_shopping_cart</span>
+                                Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="copyright">
+                Tech Wear &copy; 2026 Tech Wear. Designed by Tech Wear Team.
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/produtos.js"></script>
+    <script src="js/templatemo-crypto-script.js"></script>
+    <script>
+    (function() {
+        var modal = document.getElementById('productModal');
+        var produtoAtual = null;
+        var tamanhoSelecionado = null;
+        var quantidade = 1;
+
+        function renderProdutos() {
+            var produtos = TechWear.getProdutos();
+            var categoria = document.getElementById('filtroCategoria').value;
+            var esporte = document.getElementById('filtroEsporte').value;
+            var ordem = document.getElementById('filtroOrdem').value;
+            var busca = document.getElementById('filtroBusca').value.toLowerCase();
+
+            if (categoria) produtos = produtos.filter(function(p) { return p.categoria === categoria; });
+            if (esporte) produtos = produtos.filter(function(p) { return p.esporte === esporte; });
+            if (busca) produtos = produtos.filter(function(p) { return p.nome.toLowerCase().indexOf(busca) !== -1; });
+            if (ordem === 'menor') produtos.sort(function(a, b) { return a.preco - b.preco; });
+            if (ordem === 'maior') produtos.sort(function(a, b) { return b.preco - a.preco; });
+            if (ordem === 'nome') produtos.sort(function(a, b) { return a.nome.localeCompare(b.nome); });
+
+            var grid = document.getElementById('productsGrid');
+            if (produtos.length === 0) {
+                grid.innerHTML = '<p style="color:var(--text-secondary);grid-column:1/-1;text-align:center;padding:60px 0;">Nenhum produto encontrado.</p>';
+                return;
+            }
+            grid.innerHTML = produtos.map(function(p) {
+                return '<div class="product-card" data-id="' + p.id + '">' +
+                    '<div class="product-img">' + (p.imagem ? '<img src="' + p.imagem + '" alt="' + p.nome + '">' : '<div class="img-placeholder"><span class="material-symbols-outlined" style="font-size:48px">image</span></div>') + '</div>' +
+                    '<div class="product-info">' +
+                    '<h3 class="product-name">' + p.nome + '</h3>' +
+                    '<p class="product-cat">' + p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1) + '</p>' +
+                    '<div class="product-bottom">' +
+                    '<span class="product-price">' + TechWear.formatarPreco(p.preco) + '</span>' +
+                    '<span class="product-stock">' + (p.estoque > 0 ? 'Em estoque' : 'Esgotado') + '</span>' +
+                    '</div></div></div>';
+            }).join('');
+
+            grid.querySelectorAll('.product-card').forEach(function(card) {
+                card.addEventListener('click', function() {
+                    abrirModal(parseInt(card.dataset.id));
+                });
+            });
+        }
+
+        function abrirModal(id) {
+            produtoAtual = TechWear.getProdutoPorId(id);
+            if (!produtoAtual) return;
+            tamanhoSelecionado = null;
+            quantidade = 1;
+            document.getElementById('modalNome').textContent = produtoAtual.nome;
+            document.getElementById('modalDesc').textContent = produtoAtual.descricao;
+            document.getElementById('modalPreco').textContent = TechWear.formatarPreco(produtoAtual.preco);
+            document.getElementById('modalCor').textContent = produtoAtual.cor;
+            document.getElementById('modalEstoque').textContent = produtoAtual.estoque > 0 ? produtoAtual.estoque + ' unidades disponíveis' : 'Produto esgotado';
+            document.getElementById('qtdValor').textContent = '1';
+            var imgDiv = document.getElementById('modalImage');
+            imgDiv.innerHTML = produtoAtual.imagem ? '<img src="' + produtoAtual.imagem + '">' : '<div class="img-placeholder lg"><span class="material-symbols-outlined" style="font-size:80px">image</span></div>';
+            var tamDiv = document.getElementById('modalTamanhos');
+            tamDiv.innerHTML = produtoAtual.tamanhos.map(function(t) {
+                return '<button class="size-btn" data-size="' + t + '">' + t + '</button>';
+            }).join('');
+            tamDiv.querySelectorAll('.size-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    tamDiv.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    tamanhoSelecionado = btn.dataset.size;
+                });
+            });
+            modal.classList.add('active');
+        }
+
+        document.getElementById('modalClose').addEventListener('click', function() { modal.classList.remove('active'); });
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.classList.remove('active'); });
+        document.getElementById('qtdMenos').addEventListener('click', function() { if (quantidade > 1) { quantidade--; document.getElementById('qtdValor').textContent = quantidade; } });
+        document.getElementById('qtdMais').addEventListener('click', function() { quantidade++; document.getElementById('qtdValor').textContent = quantidade; });
+        document.getElementById('addCartBtn').addEventListener('click', function() {
+            if (!tamanhoSelecionado) { showToast('Selecione um tamanho'); return; }
+            if (!produtoAtual || produtoAtual.estoque < 1) { showToast('Produto esgotado'); return; }
+            TechWear.adicionarAoCarrinho(produtoAtual.id, tamanhoSelecionado, quantidade);
+            showToast(produtoAtual.nome + ' adicionado ao carrinho!');
+            modal.classList.remove('active');
+        });
+
+        function showToast(msg) {
+            var existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
+            var t = document.createElement('div');
+            t.className = 'toast-notification';
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:var(--accent-copper,#999);color:#1c1c1e;padding:14px 24px;border-radius:10px;font-weight:600;font-size:14px;z-index:9999;opacity:0;transform:translateY(20px);transition:all .3s ease;font-family:inherit;';
+            document.body.appendChild(t);
+            requestAnimationFrame(function() { t.style.opacity='1'; t.style.transform='translateY(0)'; });
+            setTimeout(function() { t.style.opacity='0'; t.style.transform='translateY(20px)'; setTimeout(function() { t.remove(); }, 300); }, 2500);
+        }
+
+        document.getElementById('filtroCategoria').addEventListener('change', renderProdutos);
+        document.getElementById('filtroEsporte').addEventListener('change', renderProdutos);
+        document.getElementById('filtroOrdem').addEventListener('change', renderProdutos);
+        document.getElementById('filtroBusca').addEventListener('input', renderProdutos);
+
+        // Check URL for esporte filter
+        var urlParams = new URLSearchParams(window.location.search);
+        var esporteParam = urlParams.get('esporte');
+        if (esporteParam) {
+            document.getElementById('filtroEsporte').value = esporteParam;
+        }
+
+        renderProdutos();
+    })();
+    </script>
+</body>
+</html>
