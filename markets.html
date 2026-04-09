@@ -57,7 +57,10 @@ https://templatemo.com/tm-609-crypto-vault
                     <span class="nav-icon material-symbols-outlined">shopping_cart</span>
                     Carrinho
                 </a>
-            
+                <a href="wearia.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">auto_awesome</span>
+                    WearIA
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -255,11 +258,15 @@ https://templatemo.com/tm-609-crypto-vault
         document.getElementById('filtroOrdem').addEventListener('change', renderProdutos);
         document.getElementById('filtroBusca').addEventListener('input', renderProdutos);
 
-        // Check URL for esporte filter
+        // Check URL for filters
         var urlParams = new URLSearchParams(window.location.search);
         var esporteParam = urlParams.get('esporte');
+        var categoriaParam = urlParams.get('categoria');
         if (esporteParam) {
             document.getElementById('filtroEsporte').value = esporteParam;
+        }
+        if (categoriaParam) {
+            document.getElementById('filtroCategoria').value = categoriaParam;
         }
 
         renderProdutos();

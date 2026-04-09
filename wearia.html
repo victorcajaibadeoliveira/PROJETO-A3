@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WearIA - Tech Wear</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/templatemo-crypto-style.css">
+    <link rel="stylesheet" href="css/templatemo-crypto-pages.css">
+    <link rel="stylesheet" href="css/wearia.css">
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="sidebar logo.png" alt="imagem" style="height: 40px; border-radius: 6px; object-fit: cover;">
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-label">Menu</div>
+                <a href="index.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">grid_view</span>
+                    Inicio
+                </a>
+                <a href="markets.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">checkroom</span>
+                    Coleção
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">shopping_cart</span>
+                    Carrinho
+                </a>
+                <a href="wearia.html" class="nav-item active">
+                    <span class="nav-icon material-symbols-outlined">auto_awesome</span>
+                    WearIA
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="admin.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">shield</span>
+                    Admin
+                </a>
+                <a href="settings.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">person</span>
+                    Meu Perfil
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Wear<span style="color: var(--accent-copper);">IA</span></h1>
+                <p>Busca visual inteligente — Envie uma foto e encontre peças similares</p>
+            </div>
+
+            <div class="wearia-container">
+
+                <!-- ETAPA 1: Filtros -->
+                <div class="wearia-step-section" id="stepFilters">
+                    <div class="step-header">
+                        <div class="step-badge">1</div>
+                        <h2>O que você está procurando?</h2>
+                        <button class="help-icon-btn" id="helpBtn" title="Como funciona?">
+                            <span class="material-symbols-outlined">help</span>
+                        </button>
+                    </div>
+                    <div class="filters-row">
+                        <div class="filter-card" id="filterEsporteCard">
+                            <span class="material-symbols-outlined filter-card-icon">sports_martial_arts</span>
+                            <label class="filter-card-label">Esporte</label>
+                            <select class="filter-select-wearia" id="filtroEsporte">
+                                <option value="">Todos os Esportes</option>
+                                <option value="corrida">Corrida</option>
+                                <option value="basquete">Basquete</option>
+                                <option value="academia">Academia</option>
+                            </select>
+                        </div>
+                        <div class="filter-card" id="filterCategoriaCard">
+                            <span class="material-symbols-outlined filter-card-icon">checkroom</span>
+                            <label class="filter-card-label">Tipo de Peça</label>
+                            <select class="filter-select-wearia" id="filtroCategoria">
+                                <option value="">Todas as Peças</option>
+                                <option value="camisetas">Camisetas</option>
+                                <option value="calcas">Calças</option>
+                                <option value="jaquetas">Jaquetas</option>
+                                <option value="moletons">Moletons</option>
+                                <option value="shorts">Shorts</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 2: Upload -->
+                <div class="wearia-step-section" id="stepUpload">
+                    <div class="step-header">
+                        <div class="step-badge">2</div>
+                        <h2>Envie a foto da peça</h2>
+                    </div>
+                    <div class="wearia-upload-section">
+                        <div class="card upload-card">
+                            <div class="upload-zone" id="uploadZone">
+                                <input type="file" id="imageInput" accept="image/*" hidden>
+                                <div class="upload-placeholder" id="uploadPlaceholder">
+                                    <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+                                    <p class="upload-text">Arraste uma foto aqui ou <strong>clique para selecionar</strong></p>
+                                    <p class="upload-hint">JPG, PNG — máx. 10MB</p>
+                                </div>
+                                <div class="upload-preview" id="uploadPreview" style="display:none;">
+                                    <img id="previewImg" alt="Preview">
+                                    <button class="remove-img-btn" id="removeImg" title="Remover imagem">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="btn primary wearia-search-btn" id="searchBtn" disabled>
+                                <span class="material-symbols-outlined" style="font-size:20px; vertical-align:middle;">auto_awesome</span>
+                                Buscar Peças Similares
+                            </button>
+                        </div>
+
+                        <!-- Resultado da detecção -->
+                        <div class="card detection-card" id="detectionCard" style="display:none;">
+                            <h3 class="card-title">
+                                <span class="material-symbols-outlined" style="vertical-align:middle;">visibility</span>
+                                Análise da Imagem
+                            </h3>
+                            <div class="detection-info">
+                                <div class="detection-item">
+                                    <span class="detection-label">Cor Detectada</span>
+                                    <div class="color-result">
+                                        <div class="color-swatch" id="colorSwatch"></div>
+                                        <span class="color-hex" id="colorHex">#000000</span>
+                                    </div>
+                                </div>
+                                <div class="detection-item">
+                                    <span class="detection-label">Filtros aplicados</span>
+                                    <span class="detection-value" id="detectedCategory">—</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading -->
+                <div class="wearia-loading" id="loadingSection" style="display:none;">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Analisando imagem com IA...</p>
+                    <p class="loading-sub">Extraindo cor e comparando com o catálogo</p>
+                </div>
+
+                <!-- Resultados -->
+                <div class="wearia-results" id="resultsSection" style="display:none;">
+                    <div class="results-header">
+                        <h2>Peças Mais Similares</h2>
+                        <span class="results-count" id="resultsCount">0 resultados</span>
+                    </div>
+                    <div class="results-grid" id="resultsGrid"></div>
+                </div>
+
+                <!-- Demais produtos da categoria -->
+                <div class="wearia-others" id="othersSection" style="display:none;">
+                    <div class="others-header">
+                        <h3>Outros produtos na categoria <span id="othersCatLabel"></span></h3>
+                        <a class="others-ver-mais" id="othersVerMais" href="markets.html">
+                            Ver mais
+                            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="others-row" id="othersRow"></div>
+                </div>
+
+                <!-- Sem resultados -->
+                <div class="wearia-no-results" id="noResultsState" style="display:none;">
+                    <span class="material-symbols-outlined" style="font-size:48px;color:var(--text-muted);display:block;margin-bottom:12px;">search_off</span>
+                    <h3>Nenhuma peça encontrada</h3>
+                    <p>Tente alterar o esporte ou categoria nos filtros acima.</p>
+                </div>
+
+                <!-- Estado vazio (Como funciona? virou modal de boas-vindas) -->
+                <div class="wearia-empty" id="emptyState" style="display:none;"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de produto (reutilizado de markets) -->
+    <div class="product-modal-overlay" id="productModal" style="display:none;">
+        <div class="product-modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modalImg" src="" alt="">
+                </div>
+                <div class="modal-info">
+                    <h2 id="modalName"></h2>
+                    <p class="modal-desc" id="modalDesc"></p>
+                    <div class="modal-price" id="modalPrice"></div>
+                    <div class="modal-color">
+                        <span>Cor: </span>
+                        <span id="modalColor"></span>
+                    </div>
+                    <div class="modal-sizes" id="modalSizes"></div>
+                    <div class="modal-actions">
+                        <div class="qty-control">
+                            <button class="qty-btn" id="qtyMinus">−</button>
+                            <span class="qty-value" id="qtyValue">1</span>
+                            <button class="qty-btn" id="qtyPlus">+</button>
+                        </div>
+                        <button class="btn primary" id="addToCartBtn">
+                            <span class="material-symbols-outlined" style="font-size:18px; vertical-align:middle;">shopping_cart</span>
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                    <div class="modal-score" id="modalScore" style="margin-top:16px;">
+                        <span class="material-symbols-outlined" style="color:var(--gain); vertical-align:middle; font-size:18px;">trending_up</span>
+                        <span>Similaridade: <strong id="modalScoreValue">0%</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Como funciona? (abertura automática) -->
+    <div class="wearia-notfound-overlay" id="howItWorksModal">
+        <div class="wearia-notfound-modal how-it-works-modal">
+            <div class="notfound-icon-wrap" style="background:rgba(180,140,80,0.12);">
+                <span class="material-symbols-outlined" style="color:var(--accent-copper);">image_search</span>
+            </div>
+            <h2>Como funciona?</h2>
+            <p>Encontre peças com cores parecidas com o que você já tem no guarda-roupa.</p>
+            <div class="how-it-works-steps">
+                <div class="hiw-step">
+                    <div class="hiw-step-number">1</div>
+                    <span class="material-symbols-outlined hiw-step-icon">tune</span>
+                    <p>Escolha o esporte e o tipo de peça</p>
+                </div>
+                <div class="hiw-step-arrow">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-number">2</div>
+                    <span class="material-symbols-outlined hiw-step-icon">photo_camera</span>
+                    <p>Envie uma foto da roupa desejada</p>
+                </div>
+                <div class="hiw-step-arrow">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-number">3</div>
+                    <span class="material-symbols-outlined hiw-step-icon">auto_awesome</span>
+                    <p>Receba as 3 peças mais parecidas</p>
+                </div>
+            </div>
+            <button class="btn primary notfound-close-btn" id="howItWorksClose">
+                <span class="material-symbols-outlined" style="font-size:18px; vertical-align:middle;">check_circle</span>
+                Entendi
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Nenhuma peça parecida -->
+    <div class="wearia-notfound-overlay" id="notFoundModal" style="display:none;">
+        <div class="wearia-notfound-modal">
+            <div class="notfound-icon-wrap">
+                <span class="material-symbols-outlined">sentiment_dissatisfied</span>
+            </div>
+            <h2>Não encontramos nada parecido</h2>
+            <p>A cor da peça enviada é muito diferente do que temos no catálogo no momento.</p>
+            <div class="notfound-tip">
+                <span class="material-symbols-outlined" style="font-size:18px; flex-shrink:0;">lightbulb</span>
+                <span>Tente mudar os filtros de esporte ou categoria, ou envie uma foto com iluminação melhor.</span>
+            </div>
+            <div class="notfound-detected">
+                <span>Cor detectada na sua foto:</span>
+                <div class="notfound-color-row">
+                    <div class="notfound-swatch" id="notFoundSwatch"></div>
+                    <span class="notfound-hex" id="notFoundHex"></span>
+                </div>
+            </div>
+            <button class="btn primary notfound-close-btn" id="notFoundClose">
+                <span class="material-symbols-outlined" style="font-size:18px; vertical-align:middle;">tune</span>
+                Ajustar Filtros
+            </button>
+        </div>
+    </div>
+
+    <script src="js/produtos.js"></script>
+    <script src="js/templatemo-crypto-script.js"></script>
+    <script src="js/wearia.js"></script>
+</body>
+</html>

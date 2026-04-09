@@ -43,6 +43,10 @@
                     <span class="nav-icon material-symbols-outlined">shopping_cart</span>
                     Carrinho
                 </a>
+                <a href="wearia.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">auto_awesome</span>
+                    WearIA
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <a href="admin.html" class="logout-btn active" style="text-decoration:none;">
@@ -111,6 +115,13 @@
                     <div class="form-group">
                         <label class="form-label">Cor</label>
                         <input type="text" class="form-input" id="adminCor" placeholder="Ex: Preto">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cor HEX</label>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <input type="color" id="adminHexPicker" value="#808080" style="width:44px;height:38px;padding:2px;border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary);cursor:pointer;">
+                            <input type="text" class="form-input" id="adminHexColor" placeholder="#808080" maxlength="7" style="flex:1;font-family:'Courier New',monospace;">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Esporte</label>
@@ -217,6 +228,13 @@
                         <input type="text" class="form-input" id="editCor">
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Cor HEX</label>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <input type="color" id="editHexPicker" value="#808080" style="width:44px;height:38px;padding:2px;border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary);cursor:pointer;">
+                            <input type="text" class="form-input" id="editHexColor" placeholder="#808080" maxlength="7" style="flex:1;font-family:'Courier New',monospace;">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Esporte</label>
                         <select class="form-select" id="editEsporte">
                             <option value="">Nenhum</option>
@@ -259,6 +277,23 @@
     <script src="js/templatemo-crypto-script.js"></script>
     <script>
     (function() {
+        // Sincronizar color picker <-> campo HEX (adicionar)
+        var addPicker = document.getElementById('adminHexPicker');
+        var addHexInput = document.getElementById('adminHexColor');
+        addPicker.addEventListener('input', function() { addHexInput.value = addPicker.value; });
+        addHexInput.addEventListener('input', function() {
+            var v = addHexInput.value.trim();
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) addPicker.value = v;
+        });
+        // Sincronizar color picker <-> campo HEX (editar)
+        var editPicker = document.getElementById('editHexPicker');
+        var editHexInput = document.getElementById('editHexColor');
+        editPicker.addEventListener('input', function() { editHexInput.value = editPicker.value; });
+        editHexInput.addEventListener('input', function() {
+            var v = editHexInput.value.trim();
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) editPicker.value = v;
+        });
+
         function showToast(msg) {
             var existing = document.querySelector('.toast-notification');
             if (existing) existing.remove();
@@ -361,6 +396,9 @@
             document.getElementById('editPreco').value = p.preco;
             document.getElementById('editEstoque').value = p.estoque;
             document.getElementById('editCor').value = p.cor || '';
+            var hexVal = p.hex_color || '#808080';
+            document.getElementById('editHexColor').value = hexVal;
+            document.getElementById('editHexPicker').value = hexVal;
             document.getElementById('editEsporte').value = p.esporte || '';
             document.getElementById('editTamanhos').value = (p.tamanhos || []).join(', ');
             document.getElementById('editDesc').value = p.descricao || '';
@@ -418,6 +456,7 @@
                 preco: preco,
                 estoque: estoque,
                 cor: document.getElementById('editCor').value.trim(),
+                hex_color: document.getElementById('editHexColor').value.trim() || '#808080',
                 esporte: document.getElementById('editEsporte').value,
                 tamanhos: tamanhos.length > 0 ? tamanhos : ['P', 'M', 'G'],
                 descricao: document.getElementById('editDesc').value.trim(),
@@ -441,6 +480,7 @@
                 categoria: document.getElementById('adminCategoria').value,
                 tamanhos: tamanhos.length > 0 ? tamanhos : ['P', 'M', 'G'],
                 cor: document.getElementById('adminCor').value.trim() || 'Preto',
+                hex_color: document.getElementById('adminHexColor').value.trim() || '#808080',
                 esporte: document.getElementById('adminEsporte').value,
                 imagem: fotoAddBase64,
                 estoque: estoque
@@ -450,6 +490,8 @@
             document.getElementById('adminEstoque').value = '';
             document.getElementById('adminDesc').value = '';
             document.getElementById('adminCor').value = '';
+            document.getElementById('adminHexColor').value = '';
+            document.getElementById('adminHexPicker').value = '#808080';
             removerFotoAdd();
             renderAll();
             showToast('Produto adicionado!');

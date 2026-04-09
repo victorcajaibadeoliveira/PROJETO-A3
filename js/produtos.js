@@ -13,6 +13,7 @@
             categoria: 'jaquetas',
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Preto',
+            hex_color: '#1a1a1a',
             imagem: '',
             estoque: 15,
             esporte: 'corrida'
@@ -25,6 +26,7 @@
             categoria: 'calcas',
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Cinza',
+            hex_color: '#808080',
             imagem: '',
             estoque: 22,
             esporte: 'academia'
@@ -37,6 +39,7 @@
             categoria: 'camisetas',
             tamanhos: ['P', 'M', 'G', 'GG', 'XG'],
             cor: 'Branco',
+            hex_color: '#f5f5f5',
             imagem: '',
             estoque: 40,
             esporte: 'corrida'
@@ -49,6 +52,7 @@
             categoria: 'moletons',
             tamanhos: ['M', 'G', 'GG'],
             cor: 'Preto',
+            hex_color: '#1a1a1a',
             imagem: '',
             estoque: 18,
             esporte: 'corrida'
@@ -61,6 +65,7 @@
             categoria: 'shorts',
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Azul Marinho',
+            hex_color: '#1b2a4a',
             imagem: '',
             estoque: 30,
             esporte: 'academia'
@@ -73,6 +78,7 @@
             categoria: 'camisetas',
             tamanhos: ['P', 'M', 'G'],
             cor: 'Cinza',
+            hex_color: '#808080',
             imagem: '',
             estoque: 25,
             esporte: 'academia'
@@ -85,6 +91,7 @@
             categoria: 'jaquetas',
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Verde Militar',
+            hex_color: '#4b5320',
             imagem: '',
             estoque: 12,
             esporte: 'corrida'
@@ -97,6 +104,7 @@
             categoria: 'calcas',
             tamanhos: ['P', 'M', 'G'],
             cor: 'Preto',
+            hex_color: '#1a1a1a',
             imagem: '',
             estoque: 35,
             esporte: 'academia'
