@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota Fiscal - Tech Wear</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/templatemo-crypto-style.css">
+    <link rel="stylesheet" href="css/templatemo-crypto-pages.css">
+    <style>
+        /* ── Nota layout ── */
+        .nota-wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* Toolbar (screen only) */
+        .nota-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .nota-toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-back:hover { border-color: var(--accent-copper); color: var(--text-primary); }
+        .btn-print {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent-gradient);
+            color: #1c1c1e;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s;
+        }
+        .btn-print:hover { opacity: 0.88; }
+        .btn-download {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1.5px solid var(--accent-copper);
+            background: transparent;
+            color: var(--accent-copper);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn-download:hover { background: rgba(153,153,153,0.1); }
+        .nota-selector {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .nota-selector:focus { border-color: var(--accent-copper); }
+
+        /* ── Nota fiscal document ── */
+        #notaDoc {
+            background: #fff;
+            color: #111;
+            border-radius: 8px;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            line-height: 1.4;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* Danfe-style header */
+        .nf-header {
+            display: grid;
+            grid-template-columns: 1fr 200px 180px;
+            border-bottom: 2px solid #000;
+        }
+        .nf-emitente {
+            padding: 12px;
+            border-right: 1px solid #000;
+        }
+        .nf-emitente-logo {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #111;
+            margin-bottom: 4px;
+        }
+        .nf-emitente-nome {
+            font-size: 8px;
+            color: #444;
+            line-height: 1.5;
+        }
+        .nf-danfe-label {
+            padding: 8px;
+            border-right: 1px solid #000;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .nf-danfe-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+        .nf-danfe-subtitle {
+            font-size: 8px;
+            color: #555;
+            text-align: center;
+        }
+        .nf-entrada-saida {
+            font-size: 22px;
+            font-weight: 900;
+            border: 2px solid #000;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px auto;
+        }
+        .nf-numero-box {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .nf-numero-label { font-size: 8px; color: #666; }
+        .nf-numero-value { font-size: 13px; font-weight: 700; margin: 2px 0; }
+        .nf-chave-box {
+            margin: 0;
+            border-top: 1px solid #000;
+        }
+        .nf-chave-inner {
+            padding: 6px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .nf-barcode-area {
+            flex: 1;
+        }
+        .nf-chave-label { font-size: 8px; color: #666; margin-bottom: 3px; }
+        .nf-chave-value {
+            font-size: 9px;
+            font-family: monospace;
+            letter-spacing: 1px;
+            word-break: break-all;
+            font-weight: 600;
+        }
+        .nf-barcode-small {
+            display: flex;
+            align-items: flex-end;
+            gap: 1px;
+            height: 28px;
+            margin-top: 4px;
+        }
+        .nf-barcode-small span {
+            background: #111;
+            border-radius: 0;
+        }
+
+        /* Seções */
+        .nf-section {
+            border-top: 1px solid #000;
+        }
+        .nf-section-title {
+            background: #e0e0e0;
+            padding: 3px 8px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #999;
+        }
+        .nf-section-body {
+            padding: 8px;
+        }
+        .nf-fields-grid {
+            display: grid;
+            gap: 0;
+        }
+        .nf-row {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .nf-row:last-child { border-bottom: none; }
+        .nf-field {
+            flex: 1;
+            padding: 4px 6px;
+            border-right: 1px solid #e0e0e0;
+        }
+        .nf-field:last-child { border-right: none; }
+        .nf-field-label { font-size: 7px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
+        .nf-field-value { font-size: 10px; font-weight: 600; color: #111; margin-top: 1px; }
+        .nf-field.wide { flex: 2; }
+        .nf-field.x-wide { flex: 3; }
+
+        /* Tabela de produtos */
+        .nf-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+        .nf-table th {
+            background: #e0e0e0;
+            padding: 4px 6px;
+            text-align: left;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border: 1px solid #bbb;
+        }
+        .nf-table td {
+            padding: 4px 6px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        .nf-table tr:nth-child(even) td { background: #f8f8f8; }
+        .nf-table .col-num  { width: 24px; text-align: center; }
+        .nf-table .col-cod  { width: 70px; }
+        .nf-table .col-desc { }
+        .nf-table .col-ncm  { width: 68px; }
+        .nf-table .col-cfop { width: 36px; text-align: center; }
+        .nf-table .col-un   { width: 28px; text-align: center; }
+        .nf-table .col-qtd  { width: 36px; text-align: right; }
+        .nf-table .col-vun  { width: 56px; text-align: right; }
+        .nf-table .col-vtot { width: 62px; text-align: right; font-weight: 700; }
+
+        /* Totais */
+        .nf-totais-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .nf-totais-left {
+            border-right: 1px solid #000;
+            padding: 8px;
+            font-size: 9px;
+        }
+        .nf-totais-right {
+            display: flex;
+            flex-direction: column;
+        }
+        .nf-total-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 10px;
+        }
+        .nf-total-item.grand {
+            background: #111;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 10px;
+        }
+        .nf-total-item.grand .nf-tot-val { color: #fff; }
+        .nf-tot-label { color: #555; font-size: 9px; }
+        .nf-tot-val   { font-weight: 700; color: #111; }
+
+        /* Transportadora */
+        .nf-transp-row { display: flex; }
+        .nf-transp-field {
+            flex: 1;
+            padding: 4px 6px;
+            border-right: 1px solid #e0e0e0;
+        }
+        .nf-transp-field:last-child { border-right: none; }
+        .nf-transp-field .nf-field-label { font-size: 7px; color: #666; text-transform: uppercase; }
+        .nf-transp-field .nf-field-value { font-size: 10px; font-weight: 600; }
+
+        /* Informações adicionais */
+        .nf-obs {
+            padding: 8px;
+            font-size: 9px;
+            color: #444;
+            line-height: 1.6;
+            min-height: 50px;
+        }
+
+        /* Rodapé nota */
+        .nf-footer {
+            border-top: 2px solid #000;
+            padding: 6px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0f0f0;
+        }
+        .nf-footer-text { font-size: 8px; color: #555; }
+        .nf-footer-page { font-size: 8px; color: #666; }
+        .nf-stamp {
+            position: absolute;
+            bottom: 80px;
+            right: 60px;
+            width: 120px;
+            height: 120px;
+            border: 4px solid rgba(0,100,0,0.35);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0,100,0,0.4);
+            font-size: 9px;
+            font-weight: 700;
+            text-align: center;
+            transform: rotate(-25deg);
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
+
+        /* Status badge no doc */
+        .nf-status-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0,140,0,0.9);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #notaDoc { position: relative; }
+
+        /* Empty state */
+        .nota-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .nota-empty .material-symbols-outlined { font-size: 56px; color: var(--text-muted); display: block; margin-bottom: 16px; }
+
+        /* ── Print styles ── */
+        @media print {
+            body { background: #fff !important; }
+            .mobile-menu-toggle, .sidebar-overlay, .dashboard > aside,
+            .nota-toolbar, .page-header, footer.copyright { display: none !important; }
+            .dashboard { display: block !important; }
+            .main-content { padding: 0 !important; margin: 0 !important; }
+            .nota-wrapper { max-width: 100%; }
+            #notaDoc { box-shadow: none; border-radius: 0; }
+            @page { size: A4; margin: 10mm; }
+        }
+    </style>
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+        <div class="hamburger"><span></span><span></span><span></span></div>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="sidebar logo.png" alt="Tech Wear" style="height:40px;border-radius:6px;object-fit:cover;">
+            </div>
+            <nav class="nav-section">
+                <div class="nav-label">Menu</div>
+                <a href="index.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">grid_view</span>Inicio
+                </a>
+                <a href="markets.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">checkroom</span>Coleção
+                </a>
+                <a href="wallet.html" class="nav-item active">
+                    <span class="nav-icon material-symbols-outlined">shopping_cart</span>Carrinho
+                </a>
+                <a href="wearia.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">auto_awesome</span>WearIA
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="dashboard.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">bar_chart</span>Dashboard
+                </a>
+                <a href="admin.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">shield</span>Admin
+                </a>
+                <a href="settings.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">person</span>Meu Perfil
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Nota Fiscal</h1>
+                <p>Documento auxiliar de nota fiscal eletrônica (DANFE)</p>
+            </div>
+
+            <div class="nota-wrapper">
+                <!-- Toolbar -->
+                <div class="nota-toolbar">
+                    <div class="nota-toolbar-left">
+                        <a href="wallet.html" class="btn-back">
+                            <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+                            Voltar
+                        </a>
+                        <select class="nota-selector" id="pedidoSelector" onchange="carregarNota()">
+                            <option value="">Selecione um pedido...</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-download" onclick="downloadNota()">
+                            <span class="material-symbols-outlined" style="font-size:18px;">download</span>
+                            Baixar PDF
+                        </button>
+                        <button class="btn-print" onclick="window.print()">
+                            <span class="material-symbols-outlined" style="font-size:18px;">print</span>
+                            Imprimir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Nota Fiscal Document -->
+                <div id="notaDoc">
+                    <div class="nota-empty" id="notaEmpty">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        <h3 style="color:var(--text-muted);font-size:16px;">Nenhum pedido selecionado</h3>
+                        <p style="font-size:13px;margin-top:6px;">Selecione um pedido acima para visualizar a nota fiscal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="copyright">
+                Tech Wear &copy; 2026 Tech Wear. Designed by Tech Wear Team.
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/produtos.js"></script>
+    <script src="js/templatemo-crypto-script.js"></script>
+    <script>
+    (function() {
+        'use strict';
+
+        /* ── Dados fixos da empresa emitente ── */
+        var EMITENTE = {
+            razaoSocial: 'TECH WEAR COMÉRCIO DE VESTUÁRIO ESPORTIVO LTDA',
+            nomeFantasia:  'TECH WEAR',
+            cnpj:          '12.345.678/0001-99',
+            ie:            '123.456.789.112',
+            im:            '12.345-6',
+            end:           'Av. Paulista, 1234, Conj. 56',
+            bairro:        'Bela Vista',
+            cidade:        'São Paulo',
+            uf:            'SP',
+            cep:           '01310-100',
+            fone:          '(11) 98765-4321',
+            email:         'contato@techwear.com.br'
+        };
+
+        /* ── NCM por categoria (fictício mas plausível) ── */
+        var NCM_CAT = {
+            camisetas:  '6109.10.00',
+            calcas:     '6203.42.00',
+            jaquetas:   '6201.93.00',
+            moletons:   '6110.20.10',
+            shorts:     '6211.32.00',
+            default:    '6211.39.00'
+        };
+
+        /* ── CFOP simples (venda interna/interestadual) ── */
+        function cfop(ufDest) {
+            return ufDest === 'SP' ? '5.102' : '6.102';
+        }
+
+        /* ── Chave NF-e (44 dígitos fictícia) ── */
+        function gerarChave(id) {
+            var base = id.toString().replace(/\D/g,'').slice(-6).padStart(6,'0');
+            var partes = [];
+            var s = '35260412345678000199550010000' + base + '1';
+            while (s.length < 43) s += Math.floor(Math.random()*10);
+            // dígito verificador fictício
+            partes.push(s + '0');
+            return partes[0];
+        }
+
+        /* ── Formata chave com espaços a cada 4 ── */
+        function fmtChave(c) {
+            return c.match(/.{1,4}/g).join(' ');
+        }
+
+        /* ── Gera código de barras visual ── */
+        function barcodeHTML(n) {
+            var html = '';
+            for (var i = 0; i < 80; i++) {
+                var w = (Math.sin(i * 0.7 + n) > 0.3) ? 2 : (Math.sin(i * 1.3 + n) > 0.1 ? 3 : 1);
+                var h = 28 + Math.abs(Math.sin(i * 0.4)) * 10;
+                html += '<span style="display:inline-block;width:'+w+'px;height:'+Math.round(h)+'px;background:#111;vertical-align:bottom;margin-right:1px;"></span>';
+            }
+            return html;
+        }
+
+        /* ── Formata data ── */
+        function fmtData(iso) {
+            var d = new Date(iso);
+            return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+        }
+        function fmtDataCurta(iso) {
+            return new Date(iso).toLocaleDateString('pt-BR');
+        }
+
+        /* ── Formata moeda ── */
+        function fmtR(v) {
+            return 'R$ ' + (v||0).toFixed(2).replace('.', ',');
+        }
+
+        /* ── Preenche selector de pedidos ── */
+        function popularSelector() {
+            var pedidos = TechWear.getPedidos();
+            var sel = document.getElementById('pedidoSelector');
+            sel.innerHTML = '<option value="">Selecione um pedido...</option>';
+            if (pedidos.length === 0) {
+                sel.innerHTML += '<option disabled>Nenhum pedido encontrado</option>';
+                return;
+            }
+            pedidos.forEach(function(p) {
+                var id  = '#' + p.id.toString().slice(-6).toUpperCase();
+                var dt  = new Date(p.data).toLocaleDateString('pt-BR');
+                var opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = id + ' — ' + dt + ' — ' + fmtR(p.total);
+                sel.appendChild(opt);
+            });
+            // Pré-seleciona o pedido mais recente
+            if (pedidos.length > 0) {
+                sel.value = pedidos[0].id;
+                carregarNota();
+            }
+        }
+
+        /* ── Renderiza nota ── */
+        window.carregarNota = function() {
+            var sel = document.getElementById('pedidoSelector');
+            var id  = parseInt(sel.value);
+            if (!id) {
+                document.getElementById('notaDoc').innerHTML = '<div class="nota-empty" id="notaEmpty"><span class="material-symbols-outlined">receipt_long</span><h3 style="color:#aaa;font-size:16px;">Nenhum pedido selecionado</h3><p style="font-size:13px;margin-top:6px;">Selecione um pedido acima para visualizar a nota fiscal.</p></div>';
+                return;
+            }
+            var pedidos = TechWear.getPedidos();
+            var pedido  = pedidos.find(function(p){ return p.id === id; });
+            if (!pedido) return;
+            renderNota(pedido);
+        };
+
+        function renderNota(ped) {
+            var end  = ped.endereco || {};
+            var chave = gerarChave(ped.id);
+            var nfNum = ped.id.toString().slice(-9).replace(/(\d{3})(\d{3})(\d{3})/, '$1.$2.$3');
+            var serie = '001';
+            var dataEmissao = fmtData(ped.data);
+            var dataSaida   = fmtDataCurta(ped.data);
+            var ufDest = end.estado || 'SP';
+            var cfopVal = cfop(ufDest);
+
+            /* Cálculo de tributos (fictícios mas proporcionais) */
+            var subtotal = ped.itens.reduce(function(a,i){ return a + i.subtotal; }, 0);
+            var frete    = end.frete || 0;
+            var desconto = end.desconto || 0;
+            var total    = ped.total;
+            var baseCalc = subtotal - desconto;
+            var icmsAliq = ufDest === 'SP' ? 0.12 : 0.12;
+            var icmsVal  = Math.round(baseCalc * icmsAliq * 100) / 100;
+            var pisVal   = Math.round(baseCalc * 0.0165 * 100) / 100;
+            var cofinsVal= Math.round(baseCalc * 0.076  * 100) / 100;
+            var ipiVal   = 0;
+
+            /* Itens da tabela */
+            var itensHTML = '';
+            ped.itens.forEach(function(item, idx) {
+                var produto = TechWear.getProdutoPorId(item.produtoId) || {};
+                var cat     = (produto.categoria || 'default').toLowerCase();
+                var ncm     = NCM_CAT[cat] || NCM_CAT.default;
+                var csosn   = '400';
+                itensHTML +=
+                    '<tr>' +
+                    '<td class="col-num">' + (idx+1) + '</td>' +
+                    '<td class="col-cod">TW-' + String(item.produtoId).padStart(5,'0') + '</td>' +
+                    '<td class="col-desc"><strong>' + item.nome + '</strong><br><span style="font-size:8px;color:#666;">TAM: ' + item.tamanho + ' | ' + (produto.cor||'') + '</span></td>' +
+                    '<td class="col-ncm">' + ncm + '</td>' +
+                    '<td class="col-cfop">' + cfopVal + '</td>' +
+                    '<td class="col-un">UN</td>' +
+                    '<td class="col-qtd">' + item.quantidade + '</td>' +
+                    '<td class="col-vun">' + fmtR(item.preco) + '</td>' +
+                    '<td class="col-vtot">' + fmtR(item.subtotal) + '</td>' +
+                    '</tr>';
+            });
+
+            /* Nome do destinatário */
+            var nomeDestinatario = end.nome || (TechWear.getUsuarioLogado() ? TechWear.getUsuarioLogado().nome : 'CONSUMIDOR FINAL');
+            var endStr = [end.endereco, end.bairro, end.cidade, end.estado].filter(Boolean).join(', ');
+            var cepStr = end.cep || '';
+            var metodoPag = end.metodoPagamento || 'Outros';
+
+            /* Mapa método → código */
+            var codPag = {'Cartão de Crédito':'03','Cartão de Débito':'04','PIX':'17','Boleto Bancário':'15','Outros':'99'};
+
+            document.getElementById('notaDoc').innerHTML =
+
+            /* ══════════ HEADER DANFE ══════════ */
+            '<div class="nf-header">' +
+                '<div class="nf-emitente">' +
+                    '<div class="nf-emitente-logo">TW</div>' +
+                    '<div style="font-size:11px;font-weight:700;margin-bottom:3px;">' + EMITENTE.nomeFantasia + '</div>' +
+                    '<div class="nf-emitente-nome">' +
+                        EMITENTE.razaoSocial + '<br>' +
+                        EMITENTE.end + ' — ' + EMITENTE.bairro + '<br>' +
+                        EMITENTE.cidade + ' / ' + EMITENTE.uf + ' — CEP ' + EMITENTE.cep + '<br>' +
+                        'CNPJ: ' + EMITENTE.cnpj + ' | IE: ' + EMITENTE.ie + '<br>' +
+                        'Fone: ' + EMITENTE.fone + ' | ' + EMITENTE.email +
+                    '</div>' +
+                '</div>' +
+                '<div class="nf-danfe-label">' +
+                    '<div class="nf-danfe-title">DANFE<br>Documento Auxiliar<br>da Nota Fiscal<br>Eletrônica</div>' +
+                    '<div class="nf-danfe-subtitle">0 - Entrada<br>1 - Saída</div>' +
+                    '<div class="nf-entrada-saida">1</div>' +
+                '</div>' +
+                '<div class="nf-numero-box">' +
+                    '<div class="nf-numero-label">Nº</div>' +
+                    '<div class="nf-numero-value">' + nfNum + '</div>' +
+                    '<div class="nf-numero-label">SÉRIE</div>' +
+                    '<div style="font-size:11px;font-weight:600;margin:2px 0;">' + serie + '</div>' +
+                    '<div class="nf-numero-label">FOLHA</div>' +
+                    '<div style="font-size:11px;font-weight:600;margin:2px 0;">1 / 1</div>' +
+                    '<div style="margin-top:6px;padding:4px 6px;background:#f0f0f0;border:1px solid #ccc;border-radius:3px;font-size:8px;text-align:center;color:#333;">' +
+                        'Consulte autenticidade em<br><strong>www.nfe.fazenda.gov.br</strong>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* Chave de acesso */
+            '<div class="nf-chave-box">' +
+                '<div class="nf-chave-inner">' +
+                    '<div class="nf-barcode-area">' +
+                        '<div class="nf-chave-label">CHAVE DE ACESSO</div>' +
+                        '<div class="nf-chave-value">' + fmtChave(chave) + '</div>' +
+                        '<div class="nf-barcode-small">' + barcodeHTML(ped.id % 100) + '</div>' +
+                    '</div>' +
+                    '<div style="text-align:right;font-size:8px;color:#666;">' +
+                        'Protocolo de<br>Autorização<br><strong>' + ped.id.toString().slice(0,15) + '</strong><br>' +
+                        '<span style="font-size:7px;">' + dataEmissao + '</span>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ══════════ EMITENTE ══════════ */
+            '<div class="nf-section">' +
+                '<div class="nf-section-title">Emitente</div>' +
+                '<div class="nf-section-body" style="padding:0;">' +
+                    '<div class="nf-row">' +
+                        '<div class="nf-field x-wide"><div class="nf-field-label">Nome / Razão Social</div><div class="nf-field-value">' + EMITENTE.razaoSocial + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">CNPJ</div><div class="nf-field-value">' + EMITENTE.cnpj + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Data de Emissão</div><div class="nf-field-value">' + fmtDataCurta(ped.data) + '</div></div>' +
+                    '</div>' +
+                    '<div class="nf-row">' +
+                        '<div class="nf-field wide"><div class="nf-field-label">Endereço</div><div class="nf-field-value">' + EMITENTE.end + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Bairro</div><div class="nf-field-value">' + EMITENTE.bairro + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">CEP</div><div class="nf-field-value">' + EMITENTE.cep + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Município</div><div class="nf-field-value">' + EMITENTE.cidade + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">UF</div><div class="nf-field-value">' + EMITENTE.uf + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Fone</div><div class="nf-field-value">' + EMITENTE.fone + '</div></div>' +
+                    '</div>' +
+                    '<div class="nf-row">' +
+                        '<div class="nf-field"><div class="nf-field-label">Inscrição Estadual</div><div class="nf-field-value">' + EMITENTE.ie + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Inscrição Municipal</div><div class="nf-field-value">' + EMITENTE.im + '</div></div>' +
+                        '<div class="nf-field wide"><div class="nf-field-label">CNAE</div><div class="nf-field-value">47.61-0-03</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">CRT</div><div class="nf-field-value">1 - Simples Nacional</div></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ══════════ DESTINATÁRIO ══════════ */
+            '<div class="nf-section">' +
+                '<div class="nf-section-title">Destinatário / Remetente</div>' +
+                '<div class="nf-section-body" style="padding:0;">' +
+                    '<div class="nf-row">' +
+                        '<div class="nf-field x-wide"><div class="nf-field-label">Nome / Razão Social</div><div class="nf-field-value">' + nomeDestinatario.toUpperCase() + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">CPF / CNPJ</div><div class="nf-field-value">***.***.***/***</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Data Entrada / Saída</div><div class="nf-field-value">' + dataSaida + '</div></div>' +
+                    '</div>' +
+                    '<div class="nf-row">' +
+                        '<div class="nf-field wide"><div class="nf-field-label">Endereço</div><div class="nf-field-value">' + (end.endereco || '—') + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Bairro</div><div class="nf-field-value">' + (end.bairro || '—') + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">CEP</div><div class="nf-field-value">' + cepStr + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Município</div><div class="nf-field-value">' + (end.cidade || '—') + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">UF</div><div class="nf-field-value">' + ufDest + '</div></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ══════════ PRODUTOS ══════════ */
+            '<div class="nf-section">' +
+                '<div class="nf-section-title">Dados dos Produtos / Serviços</div>' +
+                '<div style="overflow-x:auto;">' +
+                    '<table class="nf-table">' +
+                        '<thead><tr>' +
+                            '<th class="col-num">#</th>' +
+                            '<th class="col-cod">Código</th>' +
+                            '<th class="col-desc">Descrição do Produto</th>' +
+                            '<th class="col-ncm">NCM/SH</th>' +
+                            '<th class="col-cfop">CFOP</th>' +
+                            '<th class="col-un">UN</th>' +
+                            '<th class="col-qtd">Qtd</th>' +
+                            '<th class="col-vun">V. Unit.</th>' +
+                            '<th class="col-vtot">V. Total</th>' +
+                        '</tr></thead>' +
+                        '<tbody>' + itensHTML + '</tbody>' +
+                    '</table>' +
+                '</div>' +
+            '</div>' +
+
+            /* ══════════ TOTAIS ══════════ */
+            '<div class="nf-section">' +
+                '<div class="nf-section-title">Cálculo do Imposto</div>' +
+                '<div class="nf-totais-grid">' +
+                    '<div class="nf-totais-left">' +
+                        '<table style="width:100%;font-size:9px;border-collapse:collapse;">' +
+                            '<tr>' +
+                                '<td style="padding:3px 4px;border:1px solid #e0e0e0;"><span style="font-size:7px;color:#666;display:block;text-transform:uppercase;">BC do ICMS</span>' + fmtR(baseCalc) + '</td>' +
+                                '<td style="padding:3px 4px;border:1px solid #e0e0e0;"><span style="font-size:7px;color:#666;display:block;text-transform:uppercase;">Vlr. ICMS</span>' + fmtR(icmsVal) + '</td>' +
+                                '<td style="padding:3px 4px;border:1px solid #e0e0e0;"><span style="font-size:7px;color:#666;display:block;text-transform:uppercase;">Vlr. IPI</span>' + fmtR(ipiVal) + '</td>' +
+                                '<td style="padding:3px 4px;border:1px solid #e0e0e0;"><span style="font-size:7px;color:#666;display:block;text-transform:uppercase;">Vlr. PIS</span>' + fmtR(pisVal) + '</td>' +
+                                '<td style="padding:3px 4px;border:1px solid #e0e0e0;"><span style="font-size:7px;color:#666;display:block;text-transform:uppercase;">Vlr. COFINS</span>' + fmtR(cofinsVal) + '</td>' +
+                            '</tr>' +
+                        '</table>' +
+                    '</div>' +
+                    '<div class="nf-totais-right">' +
+                        '<div class="nf-total-item"><span class="nf-tot-label">Vl. Produtos</span><span class="nf-tot-val">' + fmtR(subtotal) + '</span></div>' +
+                        (frete > 0 ? '<div class="nf-total-item"><span class="nf-tot-label">Vl. Frete</span><span class="nf-tot-val">' + fmtR(frete) + '</span></div>' : '') +
+                        (desconto > 0 ? '<div class="nf-total-item"><span class="nf-tot-label">Desconto</span><span class="nf-tot-val" style="color:green;">-' + fmtR(desconto) + '</span></div>' : '') +
+                        '<div class="nf-total-item"><span class="nf-tot-label">Vl. Tributos</span><span class="nf-tot-val">' + fmtR(icmsVal+pisVal+cofinsVal) + '</span></div>' +
+                        '<div class="nf-total-item grand"><span>TOTAL DA NF-e</span><span class="nf-tot-val">' + fmtR(total) + '</span></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ══════════ TRANSPORTADORA ══════════ */
+            '<div class="nf-section">' +
+                '<div class="nf-section-title">Transportador / Volumes Transportados</div>' +
+                '<div class="nf-section-body" style="padding:0;">' +
+                    '<div class="nf-transp-row">' +
+                        '<div class="nf-transp-field" style="flex:2"><div class="nf-field-label">Nome / Razão Social</div><div class="nf-field-value">' + (end.tipoEntrega === 'Expressa' ? 'MOTOBOY EXPRESS LTDA' : 'TRANSPORTADORA PADRÃO LTDA') + '</div></div>' +
+                        '<div class="nf-transp-field"><div class="nf-field-label">Frete por Conta</div><div class="nf-field-value">' + (frete === 0 ? '3 - Sem Frete' : '0 - Emitente') + '</div></div>' +
+                        '<div class="nf-transp-field"><div class="nf-field-label">Modalidade</div><div class="nf-field-value">' + (end.tipoEntrega || 'Padrão') + '</div></div>' +
+                        '<div class="nf-transp-field"><div class="nf-field-label">Vlr. Frete</div><div class="nf-field-value">' + fmtR(frete) + '</div></div>' +
+                    '</div>' +
+                    '<div class="nf-transp-row" style="border-top:1px solid #e0e0e0;">' +
+                        '<div class="nf-transp-field"><div class="nf-field-label">Qtd. Volumes</div><div class="nf-field-value">' + ped.itens.length + '</div></div>' +
+                        '<div class="nf-transp-field"><div class="nf-field-label">Espécie</div><div class="nf-field-value">PACOTE</div></div>' +
+                        '<div class="nf-transp-field"><div class="nf-field-label">Peso Bruto (kg)</div><div class="nf-field-value">' + (ped.itens.reduce(function(a,i){return a+i.quantidade;},0) * 0.35).toFixed(3) + '</div></div>' +
+                        '<div class="nf-transp-field"><div class="nf-field-label">Peso Líquido (kg)</div><div class="nf-field-value">' + (ped.itens.reduce(function(a,i){return a+i.quantidade;},0) * 0.28).toFixed(3) + '</div></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ══════════ FORMA DE PAGAMENTO ══════════ */
+            '<div class="nf-section">' +
+                '<div class="nf-section-title">Dados de Cobrança / Pagamento</div>' +
+                '<div class="nf-section-body" style="padding:0;">' +
+                    '<div class="nf-row">' +
+                        '<div class="nf-field"><div class="nf-field-label">Forma de Pagamento</div><div class="nf-field-value">' + metodoPag + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Cód. Pagamento</div><div class="nf-field-value">' + (codPag[metodoPag]||'99') + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Vlr. Pago</div><div class="nf-field-value">' + fmtR(total) + '</div></div>' +
+                        '<div class="nf-field"><div class="nf-field-label">Troco</div><div class="nf-field-value">R$ 0,00</div></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ══════════ INFORMAÇÕES ADICIONAIS ══════════ */
+            '<div class="nf-section">' +
+                '<div class="nf-section-title">Informações Adicionais</div>' +
+                '<div class="nf-obs">' +
+                    '<strong>Informações de Interesse do Fisco:</strong><br>' +
+                    'Operação de venda a consumidor final conforme CFOP ' + cfopVal + '. ' +
+                    'Simples Nacional – Não gera direito a crédito fiscal de IPI. ' +
+                    'Venda sujeita ao regime do Simples Nacional – LC 123/2006.<br><br>' +
+                    '<strong>Informações Complementares:</strong><br>' +
+                    'Pedido Nº ' + ped.id + ' | ' + dataEmissao + '<br>' +
+                    'Entrega: ' + (endStr || 'Retirada em loja') + (cepStr ? ' — CEP ' + cepStr : '') + '<br>' +
+                    'Atendimento ao consumidor: ' + EMITENTE.fone + ' | ' + EMITENTE.email + '<br>' +
+                    'Este documento não tem valor fiscal. Emitido apenas para fins informativos.<br>' +
+                    'Obrigado pela preferência! Acesse www.techwear.com.br' +
+                '</div>' +
+            '</div>' +
+
+            /* Carimbo / stamp */
+            '<div class="nf-stamp">AUTORIZADO<br>USO DA<br>NF-e</div>' +
+
+            /* ══════════ RODAPÉ ══════════ */
+            '<div class="nf-footer">' +
+                '<div class="nf-footer-text">NF-e Nº ' + nfNum + ' | SÉRIE ' + serie + ' | ' + dataEmissao + ' | DANFE gerado por Tech Wear © 2026</div>' +
+                '<div class="nf-footer-page">Página 1 de 1</div>' +
+            '</div>';
+        };
+
+        /* ── Download como HTML imprimível ── */
+        window.downloadNota = function() {
+            var sel = document.getElementById('pedidoSelector');
+            if (!sel.value) { alert('Selecione um pedido primeiro.'); return; }
+            var conteudo = document.getElementById('notaDoc').innerHTML;
+            var blob = new Blob([
+                '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Nota Fiscal Tech Wear</title>' +
+                '<style>body{font-family:Arial,sans-serif;margin:10mm;background:#fff;color:#111;}' + document.querySelector('style').textContent.replace(/@media print[^}]+\{[^}]+\}/g,'') + '</style></head>' +
+                '<body onload="window.print()">' + conteudo + '</body></html>'
+            ], {type:'text/html'});
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'nota-fiscal-' + sel.value + '.html';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        };
+
+        /* ── Boot ── */
+        popularSelector();
+    })();
+    </script>
+</body>
+</html>

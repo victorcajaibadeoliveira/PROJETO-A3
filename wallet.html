@@ -67,6 +67,10 @@ https://templatemo.com/tm-609-crypto-vault
             </nav>
 
             <div class="sidebar-footer">
+                <a href="dashboard.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                    Dashboard
+                </a>
                 <a href="admin.html" class="logout-btn" style="text-decoration:none;">
                     <span class="material-symbols-outlined">shield</span>
                     Admin
@@ -123,46 +127,82 @@ https://templatemo.com/tm-609-crypto-vault
 
             <!-- Modal de Checkout -->
             <div class="product-modal-overlay" id="checkoutModal">
-                <div class="product-modal">
+                <div class="product-modal" style="max-width:700px;">
                     <button class="modal-close" id="checkoutClose">&times;</button>
-                    <div class="checkout-form">
-                        <h2>Dados de Entrega</h2>
-                        <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label class="form-label">Nome Completo</label>
-                                <input type="text" class="form-input" id="chkNome" required>
+                    <div class="checkout-form" style="padding: 40px 48px;">
+
+                        <!-- ETAPA 1: Nome + CEP -->
+                        <div id="chkStep1">
+                            <h2 style="margin-bottom:6px;padding-right:40px;">Dados de Entrega</h2>
+                            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:22px;">Informe seu CEP para calcular o frete automaticamente.</p>
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label class="form-label">Nome Completo *</label>
+                                    <input type="text" class="form-input" id="chkNome" placeholder="Seu nome completo" required>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label class="form-label">CEP de Entrega *</label>
+                                    <div style="display:flex;gap:10px;">
+                                        <input type="text" class="form-input" id="chkCep" placeholder="00000-000" maxlength="9" style="flex:1;">
+                                        <button class="checkout-btn" id="btnBuscarCepChk" style="flex:0 0 auto;width:auto;padding:0 18px;font-size:13px;display:flex;align-items:center;gap:6px;">
+                                            <span class="material-symbols-outlined" style="font-size:16px;">search</span>
+                                            Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Campos preenchidos pelo CEP -->
+                                <div id="chkEnderecoGroup" style="display:none;">
+                                    <div style="display:grid;grid-template-columns:1fr 100px;gap:12px;">
+                                        <div class="form-group" style="margin-bottom:0;">
+                                            <label class="form-label">Endereço</label>
+                                            <input type="text" class="form-input" id="chkEndereco" placeholder="Rua, avenida...">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom:0;">
+                                            <label class="form-label">Número</label>
+                                            <input type="text" class="form-input" id="chkNumero" placeholder="Nº">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="chkCidadeGroup" style="display:none;">
+                                    <label class="form-label">Cidade / Estado</label>
+                                    <input type="text" class="form-input" id="chkCidadeEstado" readonly style="color:var(--text-secondary);">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">CEP</label>
-                                <input type="text" class="form-input" id="chkCep" placeholder="00000-000">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Cidade</label>
-                                <input type="text" class="form-input" id="chkCidade">
-                            </div>
-                            <div class="form-group full-width">
-                                <label class="form-label">Endereço</label>
-                                <input type="text" class="form-input" id="chkEndereco" placeholder="Rua, número, complemento">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Bairro</label>
-                                <input type="text" class="form-input" id="chkBairro">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Estado</label>
-                                <select class="form-select" id="chkEstado">
-                                    <option value="">Selecione</option>
-                                    <option>SP</option><option>RJ</option><option>MG</option><option>BA</option>
-                                    <option>PR</option><option>RS</option><option>SC</option><option>GO</option>
-                                    <option>PE</option><option>CE</option><option>PA</option><option>MA</option>
-                                    <option>AM</option><option>ES</option><option>PB</option><option>RN</option>
-                                    <option>AL</option><option>MT</option><option>MS</option><option>SE</option>
-                                    <option>DF</option><option>PI</option><option>RO</option><option>TO</option>
-                                    <option>AC</option><option>AP</option><option>RR</option>
-                                </select>
+                            <!-- Spinner de carregamento do CEP -->
+                            <div id="cepSpinner" style="display:none;text-align:center;padding:12px 0;color:var(--text-secondary);font-size:13px;">
+                                <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;animation:spin 1s linear infinite;">progress_activity</span>
+                                Buscando CEP...
                             </div>
                         </div>
-                        <button class="checkout-btn" id="confirmarPedido">Confirmar Pedido</button>
+
+                        <!-- ETAPA 2: Seleção de frete (aparece após buscar CEP) -->
+                        <div id="chkStep2" style="display:none;">
+                            <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
+                                <label class="form-label" style="margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+                                    <span class="material-symbols-outlined" style="font-size:16px;">local_shipping</span>
+                                    Opções de Entrega
+                                </label>
+
+                                <!-- Frete Grátis badge -->
+                                <div id="freteGratisBadge" style="display:none;background:rgba(107,142,107,0.15);border:1px solid var(--gain);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;font-weight:600;color:var(--gain);display:flex;align-items:center;gap:8px;">
+                                    <span class="material-symbols-outlined" style="font-size:16px;">celebration</span>
+                                    Parabéns! Seu pedido tem frete grátis (acima de R$ 200,00)
+                                </div>
+
+                                <div id="freteOpcoes" style="display:flex;flex-direction:column;gap:10px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Campos ocultos para submit -->
+                        <input type="hidden" id="chkCidade">
+                        <input type="hidden" id="chkBairro">
+                        <input type="hidden" id="chkEstado">
+                        <input type="hidden" id="chkFreteValor" value="0">
+                        <input type="hidden" id="chkFreteModelo" value="">
+
+                        <button class="checkout-btn" id="confirmarPedido" style="margin-top:22px;" disabled>
+                            Ir para Pagamento →
+                        </button>
                     </div>
                 </div>
             </div>
@@ -175,24 +215,163 @@ https://templatemo.com/tm-609-crypto-vault
 
     <script src="js/produtos.js"></script>
     <script src="js/templatemo-crypto-script.js"></script>
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Opções de frete */
+        .frete-opcao {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-card);
+            user-select: none;
+        }
+        .frete-opcao:hover { border-color: var(--accent-copper); background: var(--bg-secondary); }
+        .frete-opcao.selected { border-color: var(--accent-copper); background: rgba(153,153,153,0.08); }
+        .frete-opcao input[type=radio] { display:none; }
+        .frete-opcao-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+            width: 42px;
+            text-align: center;
+        }
+        .frete-opcao-info { flex: 1; }
+        .frete-opcao-titulo {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+        .frete-opcao-prazo {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .frete-opcao-preco {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-copper);
+            flex-shrink: 0;
+            text-align: right;
+        }
+        .frete-opcao-preco.gratis { color: var(--gain); }
+        .frete-opcao-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: var(--accent-copper);
+            color: #1c1c1e;
+            display: inline-block;
+            margin-top: 4px;
+        }
+    </style>
     <script>
     (function() {
-        function showToast(msg) {
-            var existing = document.querySelector('.toast-notification');
-            if (existing) existing.remove();
+        /* ── Constantes de frete (mesmas do frete.html) ── */
+        var FC = {
+            TAXA_ANTT: 3.8866, V_BASE_CONSOL: 2.64, DESCARGA: 436.39,
+            PEDAGIO_UNIT: 20, MARGEM_SEG: 1.3015,
+            PIS: 0.0165, COFINS: 0.076, LIMITE_GRATIS: 200
+        };
+        var ICMS_TABLE = {
+            AC:0.12,AL:0.12,AM:0.12,AP:0.12,BA:0.12,CE:0.12,DF:0.12,ES:0.12,
+            GO:0.12,MA:0.12,MG:0.12,MS:0.12,MT:0.12,PA:0.12,PB:0.12,PE:0.12,
+            PI:0.12,PR:0.00,RJ:0.12,RN:0.12,RO:0.12,RR:0.12,RS:0.00,SC:0.12,
+            SE:0.12,SP:0.12,TO:0.12
+        };
+        /* Distâncias de SP para cada capital (km) */
+        var DIST_SP = {
+            SP:50, RJ:430, MG:590, RS:1200, BA:1200, PE:2300, CE:2600, AM:3800,
+            PR:400, SC:700, GO:870, MS:980, MT:1620, DF:1010, ES:900, RJ:430,
+            PA:2500, MA:2200, PI:2400, RN:2800, PB:2700, AL:2600, SE:2400,
+            TO:1700, RO:2900, AC:3500, AP:3300, RR:4000
+        };
+
+        /* Mapeia categoria do produto para volume m³ */
+        function volPorCategoria(cat) {
+            var m = {camisetas:0.005, shorts:0.0075, jaquetas:0.015,
+                     calcas:0.0075, moletons:0.012, tops:0.004, default:0.008};
+            return m[cat] || m.default;
+        }
+
+        /* Calcula volume real do carrinho */
+        function calcVolCarrinho() {
+            var carrinho = TechWear.getCarrinho();
+            return carrinho.reduce(function(acc, item) {
+                var p = TechWear.getProdutoPorId(item.produtoId);
+                if (!p) return acc;
+                return acc + volPorCategoria(p.categoria) * item.quantidade;
+            }, 0);
+        }
+
+        /* Cálculo principal — retorna {moto, van} */
+        function calcOpcoesFrete(distKm, uf) {
+            var vreal = calcVolCarrinho();
+            var aliq  = uf === 'SP' ? 0.12 : (ICMS_TABLE[uf] !== undefined ? ICMS_TABLE[uf] : 0.12);
+
+            function calcUm(veiculo) {
+                var freteANTT   = distKm * FC.TAXA_ANTT;
+                var valMoto     = freteANTT / 2;
+                var pedagio     = Math.floor(distKm / 100) * FC.PEDAGIO_UNIT;
+                var icms        = valMoto * aliq;
+                var pis         = valMoto * FC.PIS;
+                var cofins      = valMoto * FC.COFINS;
+                var freteComImp = valMoto + icms + pis + cofins;
+                var freteFinal  = (freteComImp * FC.MARGEM_SEG) + pedagio + FC.DESCARGA;
+                var fpedido     = freteFinal * (vreal / FC.V_BASE_CONSOL);
+                var mult        = vreal <= 0.01 ? 1.5 : vreal <= 0.05 ? 1.2 : 1.0;
+                var preco       = fpedido * mult;
+
+                /* Prazo */
+                var params = veiculo === 'moto'
+                    ? {v:40, krota:1.1, fh:0.9, ts:4/60}
+                    : {v:50, krota:1.3, fh:0.7, ts:7/60};
+                var distReal  = distKm * params.krota;
+                var tDesl     = distReal / (params.v * params.fh);
+                var tPortaria = 2 * params.ts;   /* 2 paradas médias */
+                var ttotal    = tDesl + tPortaria + 0.5; /* +30min CD */
+
+                return {preco: Math.max(preco, 3.9), ttotal: ttotal};
+            }
+
+            return {moto: calcUm('moto'), van: calcUm('van')};
+        }
+
+        function fmtPreco(v) { return 'R$ ' + v.toFixed(2).replace('.', ','); }
+        function fmtHoras(h) {
+            var mins = Math.round(h * 60);
+            if (mins < 60) return 'Hoje em ~' + mins + ' min';
+            var hh = Math.floor(mins/60), mm = mins % 60;
+            if (hh < 24) return 'Hoje em ~' + hh + 'h' + (mm > 0 ? mm + 'min' : '');
+            var dias = Math.ceil(hh / 8); /* 8h úteis/dia */
+            return dias === 1 ? 'Amanhã' : 'Em até ' + dias + ' dias úteis';
+        }
+
+        /* ── Toast ── */
+        function showToast(msg, err) {
+            var ex = document.querySelector('.toast-notification');
+            if (ex) ex.remove();
             var t = document.createElement('div');
             t.className = 'toast-notification';
             t.textContent = msg;
-            t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:var(--accent-copper,#999);color:#1c1c1e;padding:14px 24px;border-radius:10px;font-weight:600;font-size:14px;z-index:9999;opacity:0;transform:translateY(20px);transition:all .3s ease;font-family:inherit;';
+            var bg = err ? 'var(--loss,#c27878)' : 'var(--accent-copper,#999)';
+            t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:'+bg+';color:#1c1c1e;padding:14px 24px;border-radius:10px;font-weight:600;font-size:14px;z-index:9999;opacity:0;transform:translateY(20px);transition:all .3s ease;font-family:inherit;';
             document.body.appendChild(t);
             requestAnimationFrame(function() { t.style.opacity='1'; t.style.transform='translateY(0)'; });
-            setTimeout(function() { t.style.opacity='0'; t.style.transform='translateY(20px)'; setTimeout(function() { t.remove(); }, 300); }, 2500);
+            setTimeout(function() { t.style.opacity='0'; t.style.transform='translateY(20px)'; setTimeout(function(){ t.remove(); }, 300); }, 3000);
         }
 
+        /* ── Renderizar carrinho ── */
         function renderCarrinho() {
             var carrinho = TechWear.getCarrinho();
             var container = document.getElementById('cartItems');
-
             if (carrinho.length === 0) {
                 container.innerHTML = '<div class="cart-empty"><span class="material-symbols-outlined" style="font-size:64px;color:var(--text-muted)">shopping_cart</span><h3>Seu carrinho está vazio</h3><p>Explore nossa <a href="markets.html">coleção</a> e adicione produtos!</p></div>';
                 document.getElementById('checkoutBtn').style.display = 'none';
@@ -204,65 +383,210 @@ https://templatemo.com/tm-609-crypto-vault
                     html += '<div class="cart-item">' +
                         '<div class="cart-item-img">' + (p.imagem ? '<img src="' + p.imagem + '">' : '<div class="img-placeholder sm"><span class="material-symbols-outlined" style="font-size:32px">image</span></div>') + '</div>' +
                         '<div class="cart-item-info"><h4>' + p.nome + '</h4><p>Tamanho: ' + item.tamanho + ' • Cor: ' + p.cor + '</p></div>' +
-                        '<div class="cart-item-qtd"><button class="qtd-btn" onclick="alterarQtd(' + p.id + ',\'' + item.tamanho + '\',' + (item.quantidade - 1) + ')">-</button><span>' + item.quantidade + '</span><button class="qtd-btn" onclick="alterarQtd(' + p.id + ',\'' + item.tamanho + '\',' + (item.quantidade + 1) + ')">+</button></div>' +
+                        '<div class="cart-item-qtd"><button class="qtd-btn" onclick="alterarQtd('+p.id+',\''+item.tamanho+'\','+(item.quantidade-1)+')">-</button><span>'+item.quantidade+'</span><button class="qtd-btn" onclick="alterarQtd('+p.id+',\''+item.tamanho+'\','+(item.quantidade+1)+')">+</button></div>' +
                         '<div class="cart-item-preco">' + TechWear.formatarPreco(p.preco * item.quantidade) + '</div>' +
-                        '<button class="cart-item-remove" onclick="removerItem(' + p.id + ',\'' + item.tamanho + '\')">&times;</button>' +
+                        '<button class="cart-item-remove" onclick="removerItem('+p.id+',\''+item.tamanho+'\')">&times;</button>' +
                         '</div>';
                 });
                 container.innerHTML = html;
                 document.getElementById('checkoutBtn').style.display = 'block';
             }
-
-            var total = TechWear.getTotalCarrinho();
-            document.getElementById('summarySubtotal').textContent = TechWear.formatarPreco(total);
-            document.getElementById('summaryTotal').textContent = TechWear.formatarPreco(total);
+            atualizarResumo();
             renderHistorico();
+        }
+
+        function atualizarResumo() {
+            var subtotal = TechWear.getTotalCarrinho();
+            var freteVal = parseFloat(document.getElementById('chkFreteValor').value) || 0;
+            var total    = subtotal + freteVal;
+            document.getElementById('summarySubtotal').textContent = TechWear.formatarPreco(subtotal);
+            var freteEl = document.getElementById('summaryFrete');
+            if (freteVal === 0) {
+                freteEl.textContent = subtotal >= FC.LIMITE_GRATIS ? '🎉 Grátis' : '—';
+                freteEl.style.color = subtotal >= FC.LIMITE_GRATIS ? 'var(--gain)' : '';
+            } else {
+                freteEl.textContent = fmtPreco(freteVal);
+                freteEl.style.color = '';
+            }
+            document.getElementById('summaryTotal').textContent = TechWear.formatarPreco(total);
         }
 
         function renderHistorico() {
             var pedidos = TechWear.getPedidos();
-            var card = document.getElementById('historicoCard');
-            var container = document.getElementById('historicoPedidos');
+            var card    = document.getElementById('historicoCard');
+            var cont    = document.getElementById('historicoPedidos');
             if (pedidos.length === 0) { card.style.display = 'none'; return; }
             card.style.display = 'block';
-            container.innerHTML = pedidos.slice(0, 5).map(function(ped) {
-                var data = new Date(ped.data);
-                var dataStr = data.toLocaleDateString('pt-BR');
-                return '<div class="order-item"><div class="order-info"><span class="order-id">#' + ped.id.toString().slice(-6) + '</span><span class="order-date">' + dataStr + '</span></div><div class="order-right"><span class="order-total">' + TechWear.formatarPreco(ped.total) + '</span><span class="order-status">' + ped.status + '</span></div></div>';
+            cont.innerHTML = pedidos.slice(0, 5).map(function(ped) {
+                var dataStr = new Date(ped.data).toLocaleDateString('pt-BR');
+                return '<div class="order-item"><div class="order-info"><span class="order-id">#'+ped.id.toString().slice(-6)+'</span><span class="order-date">'+dataStr+'</span></div><div class="order-right"><span class="order-total">'+TechWear.formatarPreco(ped.total)+'</span><span class="order-status">'+ped.status+'</span><a href="nota-fiscal.html" style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:12px;color:var(--accent-copper);text-decoration:none;font-weight:600;" title="Ver nota fiscal"><span class="material-symbols-outlined" style="font-size:15px;">receipt_long</span>NF-e</a></div></div>';
             }).join('');
         }
 
-        window.alterarQtd = function(id, tam, qtd) { TechWear.alterarQuantidade(id, tam, qtd); renderCarrinho(); };
+        window.alterarQtd = function(id, tam, qtd) {
+            TechWear.alterarQuantidade(id, tam, qtd);
+            /* Limpa frete selecionado ao mudar carrinho */
+            document.getElementById('chkFreteValor').value = '0';
+            document.getElementById('chkFreteModelo').value = '';
+            document.getElementById('chkStep2').style.display = 'none';
+            document.getElementById('confirmarPedido').disabled = true;
+            renderCarrinho();
+        };
         window.removerItem = function(id, tam) { TechWear.removerDoCarrinho(id, tam); renderCarrinho(); showToast('Item removido'); };
 
-        // Checkout
+        /* ── CEP ── */
+        document.getElementById('chkCep').addEventListener('input', function() {
+            var v = this.value.replace(/\D/g,'');
+            if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
+            this.value = v;
+            /* Reset ao digitar */
+            document.getElementById('chkStep2').style.display = 'none';
+            document.getElementById('confirmarPedido').disabled = true;
+            document.getElementById('chkFreteValor').value = '0';
+            atualizarResumo();
+        });
+
+        document.getElementById('btnBuscarCepChk').addEventListener('click', function() {
+            var cep = document.getElementById('chkCep').value.replace(/\D/g,'');
+            if (cep.length !== 8) { showToast('CEP inválido', true); return; }
+            var btn = this;
+            btn.disabled = true;
+            document.getElementById('cepSpinner').style.display = 'block';
+            document.getElementById('chkStep2').style.display = 'none';
+            document.getElementById('confirmarPedido').disabled = true;
+
+            fetch('https://brasilapi.com.br/api/cep/v1/' + cep)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (!data.state) throw new Error('CEP não encontrado');
+
+                    /* Preenche campos ocultos */
+                    document.getElementById('chkCidade').value  = data.city        || '';
+                    document.getElementById('chkBairro').value  = data.neighborhood || '';
+                    document.getElementById('chkEstado').value  = data.state       || '';
+                    document.getElementById('chkEndereco').value = data.street     || '';
+
+                    /* Exibe resumo legível */
+                    document.getElementById('chkCidadeEstado').value = (data.city || '') + ' / ' + data.state;
+                    document.getElementById('chkEnderecoGroup').style.display = 'block';
+                    document.getElementById('chkCidadeGroup').style.display   = 'block';
+
+                    /* Calcula distância estimada (via tabela de capitais a partir de SP) */
+                    var uf   = data.state;
+                    var dist = DIST_SP[uf] || 500;
+                    var subtotal = TechWear.getTotalCarrinho();
+                    var gratis   = subtotal >= FC.LIMITE_GRATIS;
+
+                    /* Calcula as duas opções */
+                    var opcoes = calcOpcoesFrete(dist, uf);
+
+                    /* Badge frete grátis */
+                    var badge = document.getElementById('freteGratisBadge');
+                    badge.style.display = gratis ? 'flex' : 'none';
+
+                    /* Renderiza opções */
+                    var container = document.getElementById('freteOpcoes');
+                    var precoMoto = gratis ? 0 : opcoes.moto.preco;
+                    var precoVan  = gratis ? 0 : opcoes.van.preco;
+
+                    container.innerHTML =
+                        /* Opção Expresso (Motoboy) */
+                        '<label class="frete-opcao" id="opcaoMoto" onclick="selecionarFrete(\'moto\','+precoMoto+')">' +
+                            '<input type="radio" name="freteOpcao" value="moto">' +
+                            '<div class="frete-opcao-icon">🛵</div>' +
+                            '<div class="frete-opcao-info">' +
+                                '<div class="frete-opcao-titulo">Entrega Expressa</div>' +
+                                '<div class="frete-opcao-prazo">⏱ ' + fmtHoras(opcoes.moto.ttotal) + '</div>' +
+                                '<span class="frete-opcao-badge">Mais rápido</span>' +
+                            '</div>' +
+                            '<div class="frete-opcao-preco' + (gratis ? ' gratis' : '') + '">' + (gratis ? 'Grátis' : fmtPreco(precoMoto)) + '</div>' +
+                        '</label>' +
+                        /* Opção Padrão (Van) */
+                        '<label class="frete-opcao" id="opcaoVan" onclick="selecionarFrete(\'van\','+precoVan+')">' +
+                            '<input type="radio" name="freteOpcao" value="van">' +
+                            '<div class="frete-opcao-icon">🚐</div>' +
+                            '<div class="frete-opcao-info">' +
+                                '<div class="frete-opcao-titulo">Entrega Padrão</div>' +
+                                '<div class="frete-opcao-prazo">📅 ' + fmtHoras(opcoes.van.ttotal) + '</div>' +
+                                '<span class="frete-opcao-badge" style="background:var(--bg-secondary);color:var(--text-secondary);">Mais econômico</span>' +
+                            '</div>' +
+                            '<div class="frete-opcao-preco' + (gratis ? ' gratis' : '') + '">' + (gratis ? 'Grátis' : fmtPreco(precoVan)) + '</div>' +
+                        '</label>';
+
+                    document.getElementById('chkStep2').style.display = 'block';
+                    showToast('CEP encontrado: ' + data.city + '/' + data.state);
+                })
+                .catch(function(e) { showToast(e.message || 'Erro ao buscar CEP', true); })
+                .finally(function() {
+                    btn.disabled = false;
+                    document.getElementById('cepSpinner').style.display = 'none';
+                });
+        });
+
+        window.selecionarFrete = function(tipo, preco) {
+            document.getElementById('chkFreteValor').value  = preco;
+            document.getElementById('chkFreteModelo').value = tipo;
+            document.querySelectorAll('.frete-opcao').forEach(function(el) {
+                el.classList.toggle('selected', el.id === 'opcao' + (tipo === 'moto' ? 'Moto' : 'Van'));
+            });
+            document.getElementById('confirmarPedido').disabled = false;
+            atualizarResumo();
+        };
+
+        /* ── Modal ── */
         var chkModal = document.getElementById('checkoutModal');
+
         document.getElementById('checkoutBtn').addEventListener('click', function() {
             if (TechWear.getCarrinho().length === 0) return;
+            /* Reset ao abrir */
+            document.getElementById('chkStep2').style.display = 'none';
+            document.getElementById('chkEnderecoGroup').style.display = 'none';
+            document.getElementById('chkCidadeGroup').style.display   = 'none';
+            document.getElementById('confirmarPedido').disabled = true;
+            document.getElementById('chkFreteValor').value  = '0';
+            document.getElementById('chkFreteModelo').value = '';
+            /* Preenche o nome com o do cadastro */
+            var usuarioLogado = TechWear.getUsuarioLogado();
+            if (usuarioLogado && usuarioLogado.nome) {
+                var nomeInput = document.getElementById('chkNome');
+                nomeInput.value = usuarioLogado.nome;
+                nomeInput.readOnly = true;
+                nomeInput.style.opacity = '0.6';
+                nomeInput.style.cursor  = 'not-allowed';
+            }
             chkModal.classList.add('active');
         });
         document.getElementById('checkoutClose').addEventListener('click', function() { chkModal.classList.remove('active'); });
         chkModal.addEventListener('click', function(e) { if (e.target === chkModal) chkModal.classList.remove('active'); });
 
+        /* ── Confirmar pedido → redireciona para pagamento ── */
         document.getElementById('confirmarPedido').addEventListener('click', function() {
-            var nome = document.getElementById('chkNome').value;
-            var cep = document.getElementById('chkCep').value;
-            var endereco = document.getElementById('chkEndereco').value;
-            var cidade = document.getElementById('chkCidade').value;
-            if (!nome || !cep || !endereco || !cidade) { showToast('Preencha todos os campos obrigatórios'); return; }
-            var result = TechWear.criarPedido({
-                nome: nome, cep: cep, endereco: endereco,
-                cidade: cidade,
-                bairro: document.getElementById('chkBairro').value,
-                estado: document.getElementById('chkEstado').value
-            });
-            if (result.sucesso) {
-                chkModal.classList.remove('active');
-                showToast('Pedido #' + result.pedido.id.toString().slice(-6) + ' confirmado!');
-                renderCarrinho();
-            } else {
-                showToast(result.erro);
-            }
+            var nome     = document.getElementById('chkNome').value.trim();
+            var cep      = document.getElementById('chkCep').value.trim();
+            var endereco = document.getElementById('chkEndereco').value.trim();
+            var numero   = document.getElementById('chkNumero').value.trim();
+            var cidade   = document.getElementById('chkCidade').value;
+            var freteVal = parseFloat(document.getElementById('chkFreteValor').value) || 0;
+            var modelo   = document.getElementById('chkFreteModelo').value;
+            if (!nome)    { showToast('Informe seu nome completo', true); return; }
+            if (!cep)     { showToast('Informe o CEP', true); return; }
+            if (!numero)  { showToast('Informe o número do endereço', true); return; }
+            if (!modelo)  { showToast('Selecione uma opção de entrega', true); return; }
+
+            /* Salva dados de entrega pendentes e redireciona para pagamento */
+            localStorage.setItem('tw_checkout_pendente', JSON.stringify({
+                nome:        nome,
+                cep:         cep,
+                endereco:    endereco,
+                numero:      numero,
+                cidade:      cidade,
+                bairro:      document.getElementById('chkBairro').value,
+                estado:      document.getElementById('chkEstado').value,
+                freteVal:    freteVal,
+                tipoEntrega: modelo === 'moto' ? 'Expressa' : 'Padrão',
+                freteModelo: modelo
+            }));
+            window.location.href = 'pagamento.html';
         });
 
         renderCarrinho();

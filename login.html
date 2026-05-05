@@ -186,6 +186,8 @@ https://templatemo.com/tm-609-crypto-vault
                 if (senha.length < 6) { showToast('Senha deve ter pelo menos 6 caracteres'); return; }
                 var result = TechWear.registrarUsuario(nome, email, senha);
                 if (result.sucesso) {
+                    /* Faz login automático após o cadastro */
+                    TechWear.loginUsuario(email, senha);
                     var successMessage = document.getElementById('successMessage');
                     var formHeader = document.querySelector('.form-header');
                     var authTabs = document.querySelector('.auth-tabs');

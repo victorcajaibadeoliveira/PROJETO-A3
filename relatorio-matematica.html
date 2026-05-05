@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório — Matemáticas Aplicadas — Tech Wear</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --preto: #1a1a1a;
+            --cinza-escuro: #333;
+            --cinza: #555;
+            --cinza-claro: #888;
+            --linha: #ddd;
+            --fundo-bloco: #f7f7f7;
+            --azul: #1a3a5c;
+            --accent: #2c5282;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 11pt;
+            color: var(--preto);
+            background: #e8e8e8;
+        }
+
+        /* === BOTÃO IMPRIMIR === */
+        .print-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: #1a3a5c;
+            color: #fff;
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 999;
+            font-family: sans-serif;
+            font-size: 13px;
+        }
+        .print-bar span { opacity: 0.8; }
+        .btn-print {
+            background: #fff;
+            color: #1a3a5c;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: sans-serif;
+        }
+        .btn-print:hover { background: #e8f0fe; }
+
+        /* === PÁGINA === */
+        .page {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 56px auto 40px;
+            padding: 22mm 20mm 22mm 25mm;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+        }
+
+        /* === CAPA === */
+        .capa {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250mm;
+            text-align: center;
+            border-bottom: 3px solid var(--azul);
+            padding-bottom: 32px;
+            margin-bottom: 48px;
+        }
+        .capa-inst { font-size: 10pt; color: var(--cinza); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 40px; line-height: 1.8; }
+        .capa-titulo {
+            font-size: 22pt;
+            font-weight: 700;
+            color: var(--azul);
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+        .capa-subtitulo { font-size: 13pt; color: var(--cinza); margin-bottom: 40px; font-style: italic; }
+        .capa-projeto {
+            background: var(--azul);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 4px;
+            font-size: 13pt;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 48px;
+        }
+        .capa-alunos { font-size: 11pt; color: var(--cinza-escuro); line-height: 2.2; }
+        .capa-alunos strong { color: var(--azul); }
+        .capa-data { font-size: 10pt; color: var(--cinza-claro); margin-top: 40px; }
+
+        /* === ÍNDICE === */
+        .indice-titulo { font-size: 14pt; font-weight: 700; color: var(--azul); margin-bottom: 20px; border-bottom: 2px solid var(--azul); padding-bottom: 8px; }
+        .indice-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted var(--linha); font-size: 10.5pt; }
+        .indice-item .num { color: var(--accent); font-weight: 600; margin-right: 10px; }
+        .indice-item .pg  { color: var(--cinza-claro); }
+
+        /* === SEÇÕES === */
+        .section-break { page-break-before: always; }
+        .section-header {
+            background: var(--azul);
+            color: #fff;
+            padding: 14px 20px;
+            margin: 32px -20mm 28px -25mm;
+            padding-left: 25mm;
+        }
+        .section-number { font-size: 10pt; opacity: 0.7; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        .section-title  { font-size: 16pt; font-weight: 700; }
+
+        h2 { font-size: 13pt; color: var(--azul); margin: 28px 0 10px; font-weight: 700; }
+        h3 { font-size: 11pt; color: var(--cinza-escuro); margin: 20px 0 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+
+        p  { line-height: 1.8; margin-bottom: 12px; text-align: justify; }
+
+        /* === FÓRMULA === */
+        .formula-box {
+            background: var(--fundo-bloco);
+            border-left: 4px solid var(--azul);
+            border-radius: 0 6px 6px 0;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 10.5pt;
+            color: var(--azul);
+        }
+        .formula-box .f-linha { margin: 4px 0; }
+        .formula-box .f-destaque { font-size: 12pt; font-weight: 700; }
+        .formula-box .f-comentario { color: var(--cinza-claro); font-style: italic; font-size: 9.5pt; }
+
+        /* === TABELA === */
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 9.5pt; }
+        thead tr { background: var(--azul); color: #fff; }
+        th { padding: 8px 10px; text-align: left; font-weight: 600; }
+        td { padding: 7px 10px; border-bottom: 1px solid var(--linha); }
+        tr:nth-child(even) td { background: var(--fundo-bloco); }
+
+        /* === DESTAQUE / NOTA === */
+        .nota {
+            background: #fffbe6;
+            border: 1px solid #e0c84a;
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-size: 9.5pt;
+            color: #5a4a00;
+            margin: 12px 0;
+        }
+        .nota strong { color: #7a6200; }
+
+        /* === LISTA === */
+        ul, ol { padding-left: 22px; margin: 10px 0 14px; line-height: 1.9; }
+        li { margin-bottom: 4px; }
+
+        /* === CÓDIGO === */
+        code {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 9pt;
+            background: var(--fundo-bloco);
+            padding: 1px 6px;
+            border-radius: 3px;
+            color: #c0392b;
+        }
+
+        /* === RODAPÉ === */
+        .rodape {
+            margin-top: 48px;
+            padding-top: 14px;
+            border-top: 1px solid var(--linha);
+            display: flex;
+            justify-content: space-between;
+            font-size: 8.5pt;
+            color: var(--cinza-claro);
+        }
+
+        /* === DIAGRAMA DE FLUXO SIMPLES === */
+        .fluxo {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+        .fluxo-passo {
+            background: var(--fundo-bloco);
+            border: 1.5px solid var(--linha);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 9.5pt;
+            text-align: center;
+            min-width: 80px;
+        }
+        .fluxo-passo strong { color: var(--azul); display: block; font-size: 8pt; margin-bottom: 2px; }
+        .fluxo-seta { color: var(--azul); font-size: 16pt; margin: 0 4px; }
+
+        /* === PRINT === */
+        @media print {
+            .print-bar { display: none !important; }
+            body { background: #fff; }
+            .page { margin: 0; box-shadow: none; width: 100%; padding: 15mm 18mm; }
+            .section-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .capa-projeto { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-bar">
+    <span>Para salvar como PDF: clique no botão → selecione "Salvar como PDF" na caixa de impressão</span>
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+</div>
+
+<div class="page">
+
+    <!-- ===== CAPA ===== -->
+    <div class="capa">
+        <div class="capa-inst">
+            Universidade São Judas Tadeu — USJT<br>
+            Ciência da Computação / Análise e Desenvolvimento de Sistemas<br>
+            Disciplina: Matemática Aplicada — Trabalho A3
+        </div>
+        <div class="capa-titulo">Matemáticas Aplicadas no<br>Desenvolvimento de Software</div>
+        <div class="capa-subtitulo">Documentação técnica dos modelos matemáticos implementados</div>
+        <div class="capa-projeto">TECH WEAR — E-Commerce de Roupas Esportivas</div>
+        <div class="capa-alunos" style="text-align: center;">
+            <strong>Integrantes do Grupo</strong><br> 
+        <div class="nomes alunos" style="text-align: justify;">
+            Arthur Medina Barbosa - 82512724 <p> 
+
+            Carlos Henrique dos Santos Silva - 825164530<p>
+
+            Lucas Almeida Santana - 825130713 <p>
+
+            Matheus Melo de Carvalho Barreto - 8261106834 <p>
+
+            Thiago Cruz Silva - 825146163 <p>
+
+            Vitor Cajaiba de Oliveira - 825244506<br>
+        </div>
+        <div class="capa-data">São Paulo, abril de 2026</div>
+    </div>
+
+    <!-- ===== ÍNDICE ===== -->
+    <div class="indice-titulo">Sumário</div>
+    <div class="indice-item"><span><span class="num">1.</span> Introdução ao Projeto Tech Wear</span><span class="pg">2</span></div>
+    <div class="indice-item"><span><span class="num">2.</span> Matemática Aplicada I — Cálculo de Frete (Tabela ANTT)</span><span class="pg">3</span></div>
+    <div class="indice-item"><span><span class="num">3.</span> Matemática Aplicada II — Previsão de Estoque (Regressão Linear)</span><span class="pg">6</span></div>
+    <div class="indice-item"><span><span class="num">4.</span> Matemática Aplicada III — Similaridade de Cor por Distância Euclidiana (HEX/RGB)</span><span class="pg">9</span></div>
+    <div class="indice-item"><span><span class="num">5.</span> Conclusão</span><span class="pg">12</span></div>
+
+    <div class="rodape">
+        <span>Tech Wear — Trabalho A3 — USJT</span>
+        <span>Matemáticas Aplicadas</span>
+    </div>
+
+
+    <!-- ===== SEÇÃO 1 — INTRODUÇÃO ===== -->
+    <div class="section-break">
+        <div class="section-header">
+            <div class="section-number">Seção 1</div>
+            <div class="section-title">Introdução ao Projeto Tech Wear</div>
+        </div>
+
+        <p>
+            O <strong>Tech Wear</strong> é uma plataforma de e-commerce especializada em roupas esportivas, desenvolvida
+            como projeto acadêmico para a disciplina de Matemática Aplicada da Universidade São Judas Tadeu (USJT).
+            A aplicação foi construída utilizando tecnologias web front-end (HTML, CSS e JavaScript puro) com persistência
+            de dados via <code>localStorage</code>, e um módulo de backend em Python com FastAPI para processamento de
+            imagens através dos modelos YOLO e CLIP.
+        </p>
+        <p>
+            O objetivo do projeto é demonstrar, de forma prática, como conceitos matemáticos fundamentais são aplicados
+            em sistemas de software reais. Foram selecionadas três áreas de aplicação distintas, cada uma com formulação
+            matemática própria:
+        </p>
+        <ol>
+            <li><strong>Cálculo de Frete</strong> — uso da tabela tarifária ANTT com fórmulas de custo logístico, impostos e tempo de entrega.</li>
+            <li><strong>Previsão de Estoque</strong> — aplicação de regressão linear simples para projetar demanda futura e identificar risco de ruptura de estoque.</li>
+            <li><strong>Similaridade de Cor por Distância Euclidiana</strong> — uso da geometria do espaço RGB e do algoritmo K-Means para recomendar produtos visualmente semelhantes a uma foto enviada pelo usuário.</li>
+        </ol>
+        <p>
+            As seções seguintes detalham cada uma dessas matemáticas: seu contexto de uso dentro do sistema, as fórmulas
+            empregadas, os parâmetros utilizados e exemplos numéricos ilustrativos.
+        </p>
+    </div>
+
+
+    <!-- ===== SEÇÃO 2 — FRETE ===== -->
+    <div class="section-break">
+        <div class="section-header">
+            <div class="section-number">Seção 2 — Matemática Aplicada I</div>
+            <div class="section-title">Cálculo de Frete — Tabela ANTT</div>
+        </div>
+
+        <h2>2.1 Contexto de Uso no Sistema</h2>
+        <p>
+            O módulo de frete do Tech Wear implementa a metodologia tarifária da
+            <strong>Agência Nacional de Transportes Terrestres (ANTT)</strong>, baseada na resolução que define
+            o piso mínimo para o transporte rodoviário de cargas. O cálculo está presente em dois pontos do sistema:
+        </p>
+        <ul>
+            <li><strong>Checkout do cliente (wallet.html):</strong> ao informar o CEP, o sistema busca automaticamente a UF de destino via BrasilAPI, estima a distância rodoviária a partir de São Paulo e apresenta duas opções de entrega (Expressa por motoboy / Padrão por van).</li>
+            <li><strong>Painel Operacional (frete.html):</strong> ferramenta administrativa completa, que permite simular o custo detalhado de qualquer pedido, com breakdown de impostos, pedágios, tempo de entrega e score de prioridade.</li>
+        </ul>
+
+        <h2>2.2 Parâmetros Fixos da ANTT</h2>
+        <table>
+            <thead><tr><th>Parâmetro</th><th>Símbolo</th><th>Valor</th><th>Descrição</th></tr></thead>
+            <tbody>
+                <tr><td>Taxa ANTT (R$/km)</td><td>τ</td><td>R$ 3,8866/km</td><td>Custo base por quilômetro rodado</td></tr>
+                <tr><td>Volume base consolidado</td><td>V<sub>base</sub></td><td>2,64 m³</td><td>Volume de referência para rateio de frete</td></tr>
+                <tr><td>Taxa de descarga</td><td>T<sub>desc</sub></td><td>R$ 436,39</td><td>Custo fixo por operação de descarga</td></tr>
+                <tr><td>Pedágio</td><td>P</td><td>R$ 20,00/100km</td><td>Custo de pedágios por faixa de 100 km</td></tr>
+                <tr><td>Margem de segurança</td><td>MS</td><td>1,3015 (30,15%)</td><td>Margem comercial aplicada ao frete</td></tr>
+                <tr><td>PIS</td><td>α<sub>PIS</sub></td><td>1,65%</td><td>Incide sobre o valor do motorista</td></tr>
+                <tr><td>COFINS</td><td>α<sub>COF</sub></td><td>7,60%</td><td>Incide sobre o valor do motorista</td></tr>
+            </tbody>
+        </table>
+
+        <h2>2.3 Fórmulas do Cálculo de Frete</h2>
+        <h3>Etapa 1 — Frete Base ANTT</h3>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">F<sub>ANTT</sub> = D × τ</div>
+            <div class="f-linha f-comentario">Onde D = distância rodoviária em km; τ = R$ 3,8866/km</div>
+        </div>
+
+        <h3>Etapa 2 — Valor do Motorista e Impostos</h3>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">V<sub>motor</sub> = F<sub>ANTT</sub> / 2</div>
+            <div class="f-linha">PIS    = V<sub>motor</sub> × 0,0165</div>
+            <div class="f-linha">COFINS = V<sub>motor</sub> × 0,0760</div>
+            <div class="f-linha">ICMS   = varia por UF de destino (0% a 17%)</div>
+            <div class="f-linha f-destaque">F<sub>imp</sub> = F<sub>ANTT</sub> + PIS + COFINS + ICMS</div>
+        </div>
+
+        <h3>Etapa 3 — Pedágio</h3>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">P = ⌊D / 100⌋ × 20</div>
+            <div class="f-linha f-comentario">Função piso: uma cobrança de R$20 para cada 100 km percorridos</div>
+        </div>
+
+        <h3>Etapa 4 — Frete Final (com margem de segurança)</h3>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">F<sub>final</sub> = (F<sub>imp</sub> × MS) + P + T<sub>desc</sub></div>
+            <div class="f-linha f-comentario">MS = 1,3015 (margem comercial de 30,15%)</div>
+        </div>
+
+        <h3>Etapa 5 — Rateio por Volume do Pedido</h3>
+        <p>Como o frete foi calculado para o caminhão consolidado (2,64 m³), o custo é rateado proporcionalmente ao volume do pedido:</p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">F<sub>pedido</sub> = F<sub>final</sub> × (V<sub>pedido</sub> / V<sub>base</sub>)</div>
+            <div class="f-linha f-comentario">V<sub>pedido</sub> = soma dos volumes de cada item do carrinho</div>
+            <div class="f-linha f-comentario">V<sub>base</sub> = 2,64 m³ (volume de referência da van)</div>
+        </div>
+
+        <h2>2.4 Fórmula de Tempo de Entrega</h2>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">T<sub>total</sub> = (D × K<sub>rota</sub>) / (v × f<sub>h</sub>) + n × t<sub>s</sub> + T<sub>prep</sub> + T<sub>margem</sub></div>
+            <div class="f-linha f-comentario">D = distância | K<sub>rota</sub> = fator de tortuosidade da rota</div>
+            <div class="f-linha f-comentario">v = velocidade média do veículo | f<sub>h</sub> = fator de eficiência horária</div>
+            <div class="f-linha f-comentario">n = pedidos na fila | t<sub>s</sub> = tempo médio por parada</div>
+        </div>
+        <table>
+            <thead><tr><th>Veículo</th><th>v (km/h)</th><th>f<sub>h</sub></th><th>K<sub>rota</sub></th><th>t<sub>s</sub> (min)</th></tr></thead>
+            <tbody>
+                <tr><td>🛵 Motoboy</td><td>40</td><td>0,9</td><td>1,1</td><td>4</td></tr>
+                <tr><td>🚐 Van / Fiorino</td><td>50</td><td>0,7</td><td>1,3</td><td>7</td></tr>
+            </tbody>
+        </table>
+
+        <h2>2.5 Score de Prioridade (S<sub>p</sub>)</h2>
+        <p>O painel operacional permite calcular a prioridade de despacho de um pedido com base em dois critérios ponderados:</p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">S<sub>p</sub> = (Urgência × 0,6) + (Densidade × 0,4)</div>
+            <div class="f-linha f-comentario">Urgência: nota 0–10 do cliente | Densidade: razão massa/volume do pedido</div>
+            <div class="f-linha f-comentario">Ambos normalizados para escala 0–1 antes da ponderação</div>
+        </div>
+
+        <div class="nota">
+            <strong>Exemplo numérico:</strong> Pedido para Curitiba/PR (D = 408 km).
+            F<sub>ANTT</sub> = 408 × 3,8866 = R$ 1.585,73 | V<sub>motor</sub> = R$ 792,87
+            | PIS = R$ 13,08 | COFINS = R$ 60,26 | Pedágio = ⌊408/100⌋ × 20 = 4 × 20 = R$ 80,00
+            | F<sub>final</sub> = (1.585,73 + 13,08 + 60,26) × 1,3015 + 80 + 436,39 = <strong>R$ 2.793,52</strong>
+            | Para pedido de 0,02 m³: F<sub>pedido</sub> = 2.793,52 × (0,02/2,64) = <strong>R$ 21,16</strong>
+        </div>
+    </div>
+
+
+    <!-- ===== SEÇÃO 3 — PREVISÃO DE ESTOQUE ===== -->
+    <div class="section-break">
+        <div class="section-header">
+            <div class="section-number">Seção 3 — Matemática Aplicada II</div>
+            <div class="section-title">Previsão de Estoque — Regressão Linear</div>
+        </div>
+
+        <h2>3.1 Contexto de Uso no Sistema</h2>
+        <p>
+            O <strong>Dashboard de Analytics (dashboard.html)</strong> do Tech Wear implementa dois modelos preditivos
+            baseados em regressão linear: um para prever a <strong>receita do próximo mês</strong> e outro para
+            identificar <strong>risco de ruptura de estoque</strong> por produto.
+        </p>
+        <p>
+            A regressão linear é o modelo mais adequado para séries temporais curtas (6 a 12 meses de histórico),
+            onde se deseja uma tendência de crescimento ou queda sem complexidade computacional excessiva, o que é
+            ideal para um sistema front-end executado no navegador.
+        </p>
+
+        <h2>3.2 Regressão Linear Simples</h2>
+        <p>
+            Dada uma série temporal de valores mensais <strong>y<sub>0</sub>, y<sub>1</sub>, ..., y<sub>n-1</sub></strong>
+            (receita ou quantidade de pedidos), a regressão linear determina a reta de melhor ajuste
+            <strong>ŷ = m·x + b</strong>, onde:
+        </p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">m = (n·ΣXY − ΣX·ΣY) / (n·ΣX² − (ΣX)²)</div>
+            <div class="f-linha f-destaque">b = (ΣY − m·ΣX) / n</div>
+            <div class="f-linha f-comentario">n = número de meses | x<sub>i</sub> = índice do mês (0, 1, 2, ...) | y<sub>i</sub> = valor observado</div>
+        </div>
+
+        <h2>3.3 Projeção do Próximo Mês</h2>
+        <p>
+            Para projetar o valor do mês seguinte (índice <em>n</em>), aplica-se a reta calculada no ponto além da série:
+        </p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">ŷ<sub>n</sub> = m · n + b</div>
+            <div class="f-linha f-comentario">Valor mínimo = 0 (garante que não seja negativo)</div>
+        </div>
+
+        <h2>3.4 Coeficiente de Determinação R²</h2>
+        <p>
+            O R² (R-quadrado) mede a qualidade do ajuste da reta aos dados históricos.
+            Varia de 0 a 1: quanto mais próximo de 1, mais confiável é a previsão.
+        </p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">R² = 1 − (SS<sub>res</sub> / SS<sub>tot</sub>)</div>
+            <div class="f-linha">SS<sub>res</sub> = Σ (y<sub>i</sub> − ŷ<sub>i</sub>)²   ← soma dos resíduos ao quadrado</div>
+            <div class="f-linha">SS<sub>tot</sub> = Σ (y<sub>i</sub> − ȳ)²             ← variância total em torno da média</div>
+            <div class="f-linha f-comentario">ȳ = média dos valores observados</div>
+        </div>
+
+        <table>
+            <thead><tr><th>Faixa de R²</th><th>Classificação no sistema</th><th>Interpretação</th></tr></thead>
+            <tbody>
+                <tr><td>0,75 — 1,00</td><td>Alta confiança</td><td>Tendência clara e consistente</td></tr>
+                <tr><td>0,40 — 0,74</td><td>Média confiança</td><td>Crescimento com oscilações moderadas</td></tr>
+                <tr><td>0,00 — 0,39</td><td>Baixa confiança</td><td>Série instável; previsão é estimativa</td></tr>
+            </tbody>
+        </table>
+
+        <h2>3.5 Previsão de Ruptura de Estoque</h2>
+        <p>
+            Para cada produto cadastrado, o sistema calcula a <strong>velocidade de venda</strong> com base nos
+            últimos 30 dias e projeta o estoque futuro:
+        </p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">vel<sub>30</sub> = Σ unidades vendidas nos últimos 30 dias</div>
+            <div class="f-linha f-destaque">vel<sub>dia</sub> = vel<sub>30</sub> / 30</div>
+            <div class="f-linha f-destaque">dias<sub>restantes</sub> = ⌊estoque<sub>atual</sub> / vel<sub>dia</sub>⌋</div>
+            <div class="f-linha f-destaque">estoque<sub>30d</sub> = estoque<sub>atual</sub> − vel<sub>30</sub></div>
+            <div class="f-linha f-destaque">reposição = max(0,  ⌈vel<sub>30</sub> × 1,2⌉ − estoque<sub>atual</sub>)</div>
+            <div class="f-linha f-comentario">Fator 1,2 = margem de segurança de 20% sobre a demanda prevista</div>
+        </div>
+
+        <h2>3.6 Critérios de Alerta</h2>
+        <table>
+            <thead><tr><th>Condição</th><th>Status</th><th>Ação sugerida</th></tr></thead>
+            <tbody>
+                <tr><td>vel<sub>30</sub> = 0</td><td>Sem movimento</td><td>Produto sem giro; avaliar descontinuação</td></tr>
+                <tr><td>dias<sub>restantes</sub> ≤ 15</td><td>Crítico</td><td>Reposição imediata necessária</td></tr>
+                <tr><td>dias<sub>restantes</sub> ≤ 45</td><td>Atenção</td><td>Planejar reposição em breve</td></tr>
+                <tr><td>dias<sub>restantes</sub> > 45</td><td>OK</td><td>Estoque adequado para o período</td></tr>
+            </tbody>
+        </table>
+
+        <div class="nota">
+            <strong>Exemplo numérico:</strong> Produto "Camiseta Performance UV" com estoque = 40 unidades.
+            Nas últimas 30 dias foram vendidas 12 unidades. vel<sub>dia</sub> = 12/30 = 0,4 un/dia.
+            dias<sub>restantes</sub> = ⌊40/0,4⌋ = 100 dias → Status: <strong>OK</strong>.
+            Reposição = max(0, ⌈12×1,2⌉ − 40) = max(0, 15 − 40) = <strong>0</strong> (não precisa repor).
+        </div>
+    </div>
+
+
+    <!-- ===== SEÇÃO 4 — COR HEX ===== -->
+    <div class="section-break">
+        <div class="section-header">
+            <div class="section-number">Seção 4 — Matemática Aplicada III</div>
+            <div class="section-title">Similaridade de Cor — Distância Euclidiana no Espaço RGB</div>
+        </div>
+
+        <h2>4.1 Contexto de Uso no Sistema</h2>
+        <p>
+            O módulo <strong>WearIA (wearia.html)</strong> permite ao usuário fotografar uma roupa qualquer —
+            do próprio guarda-roupa ou de uma vitrine — e receber recomendações de produtos do catálogo Tech Wear
+            com cores visualmente semelhantes. Todo o processamento de cor ocorre no front-end, diretamente no
+            navegador, sem necessidade de servidor.
+        </p>
+
+        <div class="fluxo">
+            <div class="fluxo-passo"><strong>1</strong>Upload da imagem</div>
+            <div class="fluxo-seta">→</div>
+            <div class="fluxo-passo"><strong>2</strong>Extração do fundo</div>
+            <div class="fluxo-seta">→</div>
+            <div class="fluxo-passo"><strong>3</strong>K-Means RGB</div>
+            <div class="fluxo-seta">→</div>
+            <div class="fluxo-passo"><strong>4</strong>Distância Euclidiana</div>
+            <div class="fluxo-seta">→</div>
+            <div class="fluxo-passo"><strong>5</strong>Ranking por similaridade</div>
+        </div>
+
+        <h2>4.2 Espaço de Cores RGB</h2>
+        <p>
+            Cada cor digital é representada por três componentes inteiros no intervalo [0, 255]:
+            <strong>R</strong> (vermelho), <strong>G</strong> (verde) e <strong>B</strong> (azul).
+            Um código hexadecimal como <code>#4b5320</code> corresponde a
+            R=75, G=83, B=32. Esses três valores definem um ponto num <strong>espaço tridimensional</strong>
+            — o cubo de cores RGB.
+        </p>
+
+        <h2>4.3 Extração da Cor Dominante com K-Means</h2>
+        <p>
+            Antes de comparar cores, é necessário identificar a cor dominante da roupa na imagem. O sistema aplica
+            o algoritmo <strong>K-Means</strong> sobre os pixels do crop central da imagem (região onde a roupa
+            provavelmente está), com <strong>k = 4 clusters</strong>:
+        </p>
+        <div class="formula-box">
+            <div class="f-linha"><strong>Inicialização:</strong> selecionar k centroids iniciais espaçados uniformemente</div>
+            <div class="f-linha"><strong>Atribuição:</strong> para cada pixel p, atribuir ao centroid c* mais próximo:</div>
+            <div class="f-linha f-destaque" style="padding-left:16px;">c* = argmin<sub>c</sub> d(p, c)  =  argmin<sub>c</sub> √[(R<sub>p</sub>−R<sub>c</sub>)² + (G<sub>p</sub>−G<sub>c</sub>)² + (B<sub>p</sub>−B<sub>c</sub>)²]</div>
+            <div class="f-linha"><strong>Atualização:</strong> recalcular cada centroid como a média dos pixels atribuídos</div>
+            <div class="f-linha f-comentario">Repetir atribuição + atualização por no máximo 15 iterações</div>
+        </div>
+        <p>
+            Após a convergência, o cluster com <strong>maior quantidade de pixels</strong> que não pertencem ao
+            fundo da imagem representa a cor dominante da peça.
+        </p>
+
+        <h2>4.4 Distância Euclidiana no Espaço RGB</h2>
+        <p>
+            Para comparar a cor detectada na imagem com o <code>hex_color</code> de cada produto do catálogo,
+            utiliza-se a <strong>distância euclidiana</strong> entre dois pontos no cubo RGB tridimensional:
+        </p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">d(A, B) = √[ (R<sub>A</sub>−R<sub>B</sub>)² + (G<sub>A</sub>−G<sub>B</sub>)² + (B<sub>A</sub>−B<sub>B</sub>)² ]</div>
+            <div class="f-linha f-comentario">d ∈ [0 ; 441,67],  onde d<sub>max</sub> = √(255² + 255² + 255²) ≈ 441,67</div>
+            <div class="f-linha f-comentario">d = 0 → cores idênticas | d = 441,67 → cores mais distantes possíveis (preto x branco)</div>
+        </div>
+
+        <h2>4.5 Score de Similaridade Normalizado</h2>
+        <p>
+            A distância é convertida num score de similaridade entre 0 e 1, onde 1 significa cores idênticas:
+        </p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">similaridade(A, B) = 1 − d(A, B) / d<sub>max</sub></div>
+            <div class="f-linha f-comentario">d<sub>max</sub> = √(255² + 255² + 255²) ≈ 441,67</div>
+        </div>
+        <p>
+            O sistema define um <strong>limiar mínimo de 0,60</strong> (60% de similaridade). Produtos com score
+            abaixo desse limiar são descartados e o usuário recebe a mensagem "não encontramos nada parecido".
+            Os 3 produtos com maior score são exibidos como recomendações principais.
+        </p>
+
+        <table>
+            <thead><tr><th>Exemplo de par de cores</th><th>RGB A</th><th>RGB B</th><th>d(A,B)</th><th>Similaridade</th></tr></thead>
+            <tbody>
+                <tr><td>Preto x Preto</td><td>(0,0,0)</td><td>(0,0,0)</td><td>0,00</td><td>100,0%</td></tr>
+                <tr><td>Preto (#1a1a1a) x Verde Militar (#4b5320)</td><td>(26,26,26)</td><td>(75,83,32)</td><td>77,2</td><td>82,5%</td></tr>
+                <tr><td>Cinza (#808080) x Azul Marinho (#1b2a4a)</td><td>(128,128,128)</td><td>(27,42,74)</td><td>152,8</td><td>65,4%</td></tr>
+                <tr><td>Preto x Branco</td><td>(0,0,0)</td><td>(255,255,255)</td><td>441,67</td><td>0,0%</td></tr>
+            </tbody>
+        </table>
+
+        <h2>4.6 Subtração do Fundo</h2>
+        <p>
+            Para evitar que a cor do fundo da imagem (parede, chão) interfira na detecção, o sistema aplica
+            um <strong>limiar de separação</strong> de 60 unidades de distância euclidiana:
+        </p>
+        <div class="formula-box">
+            <div class="f-linha f-destaque">pixel é "da roupa" se:  d(pixel<sub>RGB</sub>, fundo<sub>RGB</sub>) > 60</div>
+            <div class="f-linha f-comentario">fundo<sub>RGB</sub> é estimado pela média dos pixels das bordas da imagem (margem de 5px)</div>
+        </div>
+        <p>
+            Somente os pixels classificados como "da roupa" são passados ao algoritmo K-Means, garantindo que a
+            cor dominante detectada pertença efetivamente à peça de vestuário, não ao ambiente.
+        </p>
+
+        <div class="nota">
+            <strong>Exemplo numérico:</strong> Usuário envia foto de uma jaqueta verde-militar.
+            K-Means detecta cor dominante: RGB = (71, 79, 28) → HEX = <code>#474f1c</code>.
+            Produto "Jaqueta Windbreaker" tem <code>hex_color = #4b5320</code> → RGB = (75, 83, 32).
+            d = √[(71−75)² + (79−83)² + (28−32)²] = √[16+16+16] = √48 ≈ 6,93.
+            similaridade = 1 − 6,93/441,67 = <strong>98,4%</strong> → produto exibido como recomendação #1.
+        </div>
+    </div>
+
+
+    <!-- ===== CONCLUSÃO ===== -->
+    <div class="section-break">
+        <div class="section-header">
+            <div class="section-number">Seção 5</div>
+            <div class="section-title">Conclusão</div>
+        </div>
+
+        <p>
+            O projeto Tech Wear demonstrou que a matemática aplicada não se limita a cálculos abstratos: ela está
+            presente em decisões de negócio cotidianas, como calcular o custo justo de uma entrega, antecipar a
+            falta de um produto em estoque ou identificar visualmente uma peça de roupa.
+        </p>
+
+        <table>
+            <thead><tr><th>Módulo</th><th>Área Matemática</th><th>Conceitos Centrais</th><th>Localização no Sistema</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>Cálculo de Frete</td>
+                    <td>Matemática Financeira / Logística</td>
+                    <td>Tarifação ANTT, impostos (PIS/COFINS/ICMS), função piso, rateio por volume, ponderação</td>
+                    <td>wallet.html · frete.html</td>
+                </tr>
+                <tr>
+                    <td>Previsão de Estoque</td>
+                    <td>Estatística / Análise de Dados</td>
+                    <td>Regressão linear simples, mínimos quadrados, coeficiente R², velocidade de venda</td>
+                    <td>dashboard.html</td>
+                </tr>
+                <tr>
+                    <td>Similaridade de Cor</td>
+                    <td>Geometria Analítica / Álgebra Linear</td>
+                    <td>Espaço vetorial RGB, distância euclidiana, K-Means, normalização, limiar de decisão</td>
+                    <td>wearia.html · js/wearia.js</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            A integração dessas três matemáticas num único sistema web demonstra a versatilidade dos conceitos
+            fundamentais de cálculo, estatística e geometria quando aplicados a problemas reais de engenharia de software.
+        </p>
+    </div>
+
+    <div class="rodape">
+        <span>Tech Wear — Trabalho A3 — USJT — 2026</span>
+        <span>Matemáticas Aplicadas ao Desenvolvimento de Software</span>
+    </div>
+
+</div>
+
+</body>
+</html>

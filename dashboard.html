@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Tech Wear</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/templatemo-crypto-style.css">
+    <link rel="stylesheet" href="css/templatemo-crypto-pages.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ===== KPI CARDS ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px)  { .kpi-grid { grid-template-columns: 1fr; } }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .kpi-card:hover { border-color: var(--accent-copper); transform: translateY(-2px); }
+        .kpi-card.accent { background: var(--accent-gradient); border: none; }
+        .kpi-card.accent .kpi-label,
+        .kpi-card.accent .kpi-value,
+        .kpi-card.accent .kpi-delta { color: #1c1c1e; }
+
+        .kpi-top { display: flex; align-items: center; justify-content: space-between; }
+        .kpi-icon {
+            width: 40px; height: 40px;
+            background: rgba(153,153,153,0.12);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .kpi-card.accent .kpi-icon { background: rgba(28,28,30,0.18); }
+        .kpi-label { font-size: 13px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+        .kpi-value { font-size: 28px; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+        .kpi-delta { font-size: 12px; font-weight: 600; }
+        .kpi-delta.up { color: var(--gain); }
+        .kpi-delta.down { color: var(--loss); }
+        .kpi-delta.neutral { color: var(--text-secondary); }
+
+        /* ===== GRID DE GRÁFICOS ===== */
+        .charts-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .charts-grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 1024px) {
+            .charts-grid-2, .charts-grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+        }
+        .chart-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .chart-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        .chart-wrap { position: relative; }
+
+        /* ===== SEÇÃO PREVISÃO ===== */
+        .forecast-section {
+            margin-bottom: 20px;
+        }
+        .forecast-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .forecast-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(107,142,107,0.15);
+            border: 1px solid var(--gain);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gain);
+        }
+
+        /* ===== TABELA DE ESTOQUE ===== */
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .stock-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+        .stock-table td {
+            padding: 12px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+        .stock-table tr:last-child td { border-bottom: none; }
+        .stock-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .stock-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .stock-status.ok      { background: rgba(107,142,107,0.15); color: var(--gain); border: 1px solid var(--gain); }
+        .stock-status.warn    { background: rgba(194,169,80,0.15);  color: #c9a84c;     border: 1px solid #c9a84c; }
+        .stock-status.danger  { background: rgba(194,120,120,0.15); color: var(--loss); border: 1px solid var(--loss); }
+
+        /* Mini barra de estoque */
+        .stock-bar-bg { height: 6px; background: var(--border); border-radius: 3px; min-width: 80px; }
+        .stock-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+        .empty-state .material-symbols-outlined { font-size: 48px; margin-bottom: 12px; display: block; }
+
+        /* ===== PREVISÃO CARDS ===== */
+        .forecast-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 900px) { .forecast-kpi-grid { grid-template-columns: 1fr; } }
+
+        .forecast-kpi {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .forecast-kpi-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+        .forecast-kpi-value { font-size: 22px; font-weight: 700; color: var(--accent-copper); }
+        .forecast-kpi-note  { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+        /* ===== PERÍODO SELETOR ===== */
+        .period-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+        .period-tab {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .period-tab:hover { border-color: var(--accent-copper); color: var(--text-primary); }
+        .period-tab.active { background: var(--accent-copper); border-color: var(--accent-copper); color: #1c1c1e; }
+
+        /* ===== SEÇÃO TÍTULO ===== */
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .material-symbols-outlined { color: var(--accent-copper); font-size: 20px; }
+    </style>
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <div class="hamburger"><span></span><span></span><span></span></div>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="sidebar logo.png" alt="imagem" style="height: 40px; border-radius: 6px; object-fit: cover;">
+            </div>
+            <nav class="nav-section">
+                <div class="nav-label">Menu</div>
+                <a href="index.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">grid_view</span>
+                    Inicio
+                </a>
+                <a href="markets.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">checkroom</span>
+                    Coleção
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">shopping_cart</span>
+                    Carrinho
+                </a>
+                <a href="wearia.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">auto_awesome</span>
+                    WearIA
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="dashboard.html" class="logout-btn active" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                    Dashboard
+                </a>
+                <a href="admin.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">shield</span>
+                    Admin
+                </a>
+                <a href="settings.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">person</span>
+                    Meu Perfil
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Visão geral de vendas, desempenho e previsões para o próximo mês</p>
+            </div>
+
+            <!-- Banner demo data -->
+            <div id="demoBanner" style="display:none;background:rgba(107,142,107,0.1);border:1px solid var(--gain);border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="material-symbols-outlined" style="color:var(--gain);font-size:22px;">science</span>
+                    <div>
+                        <div style="font-weight:700;color:var(--text-primary);font-size:14px;">Nenhum pedido encontrado</div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">Gere dados de demonstração para visualizar os gráficos com histórico fictício dos últimos 12 meses.</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button id="btnSeedDemo" onclick="seedDemoData()" style="background:var(--gain);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Gerar demonstração</button>
+                    <button onclick="document.getElementById('demoBanner').style.display='none'" style="background:transparent;color:var(--text-secondary);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-size:13px;font-family:inherit;cursor:pointer;">Dispensar</button>
+                </div>
+            </div>
+            <!-- Banner limpar demo -->
+            <div id="clearBanner" style="display:none;background:rgba(194,120,120,0.08);border:1px solid var(--loss);border-radius:12px;padding:12px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                <div style="font-size:13px;color:var(--text-secondary);"><span style="color:var(--loss);font-weight:700;">Modo demonstração ativo.</span> Esses pedidos são fictícios e servem apenas para visualização.</div>
+                <button onclick="clearDemoData()" style="background:transparent;color:var(--loss);border:1px solid var(--loss);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">Limpar dados de demo</button>
+            </div>
+
+            <!-- Seletor de período + ações -->
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+                <div class="period-tabs" id="periodTabs" style="margin-bottom:0;">
+                    <button class="period-tab" data-months="1">30 dias</button>
+                    <button class="period-tab active" data-months="3">3 meses</button>
+                    <button class="period-tab" data-months="6">6 meses</button>
+                    <button class="period-tab" data-months="12">12 meses</button>
+                    <button class="period-tab" data-months="0">Tudo</button>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button id="btnSeedDemo" onclick="seedDemoData()" style="display:flex;align-items:center;gap:6px;background:rgba(107,142,107,0.15);color:var(--gain);border:1px solid var(--gain);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">
+                        <span class="material-symbols-outlined" style="font-size:15px;">science</span>
+                        Gerar demonstração
+                    </button>
+                    <button id="btnClearDemo" onclick="clearDemoData()" style="display:none;align-items:center;gap:6px;background:rgba(194,120,120,0.1);color:var(--loss);border:1px solid var(--loss);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">
+                        <span class="material-symbols-outlined" style="font-size:15px;">delete</span>
+                        Limpar demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPIs principais -->
+            <div class="kpi-grid" id="kpiGrid"></div>
+
+            <!-- Gráficos — linha de receita + rosca categorias -->
+            <div class="charts-grid-3" style="margin-bottom:20px;">
+                <div class="chart-card">
+                    <div class="chart-title">Receita ao Longo do Tempo</div>
+                    <div class="chart-subtitle" id="receitaSubtitle">Evolução mensal de receita</div>
+                    <div class="chart-wrap" style="height:260px;">
+                        <canvas id="chartReceita"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Vendas por Categoria</div>
+                    <div class="chart-subtitle">Participação no período</div>
+                    <div class="chart-wrap" style="height:260px;">
+                        <canvas id="chartCategorias"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedidos por status + top produtos -->
+            <div class="charts-grid-2" style="margin-bottom:20px;">
+                <div class="chart-card">
+                    <div class="chart-title">Top 5 Produtos Mais Vendidos</div>
+                    <div class="chart-subtitle">Por quantidade no período</div>
+                    <div class="chart-wrap" style="height:220px;">
+                        <canvas id="chartTopProdutos"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Ticket Médio por Mês</div>
+                    <div class="chart-subtitle">Valor médio por pedido</div>
+                    <div class="chart-wrap" style="height:220px;">
+                        <canvas id="chartTicket"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PREVISÃO DE VENDAS ===== -->
+            <div class="forecast-section">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">trending_up</span>
+                    Previsão para o Próximo Mês
+                    <span class="forecast-badge">
+                        <span class="material-symbols-outlined" style="font-size:12px;">auto_awesome</span>
+                        IA preditiva
+                    </span>
+                </div>
+
+                <div class="forecast-kpi-grid" id="forecastKpis"></div>
+
+                <div class="chart-card">
+                    <div class="chart-title">Histórico + Projeção de Receita</div>
+                    <div class="chart-subtitle">Regressão linear sobre os últimos meses — a área tracejada é a previsão</div>
+                    <div class="chart-wrap" style="height:260px;">
+                        <canvas id="chartForecast"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== GESTÃO DE ESTOQUE ===== -->
+            <div style="margin-bottom:20px;">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    Gestão de Estoque — Previsão de Ruptura
+                </div>
+                <div class="chart-card">
+                    <div id="stockTableWrap"></div>
+                </div>
+            </div>
+
+            <footer class="copyright">
+                Tech Wear &copy; 2026 Tech Wear. Designed by Tech Wear Team.
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/produtos.js"></script>
+    <script src="js/templatemo-crypto-script.js"></script>
+    <script>
+    (function() {
+        /* ─────────────────────────────────────────
+           HELPERS
+        ───────────────────────────────────────── */
+        var CSS_VARS = (function() {
+            var s = getComputedStyle(document.documentElement);
+            return {
+                gain:    s.getPropertyValue('--gain').trim()    || '#6b8e6b',
+                loss:    s.getPropertyValue('--loss').trim()    || '#c27878',
+                copper:  s.getPropertyValue('--accent-copper').trim() || '#999',
+                text2:   s.getPropertyValue('--text-secondary').trim() || '#a8a8a8',
+                border:  s.getPropertyValue('--border').trim() || '#3a3a3c',
+                card:    s.getPropertyValue('--bg-card').trim() || '#2c2c2e',
+                primary: s.getPropertyValue('--text-primary').trim() || '#f5f0e8',
+            };
+        })();
+
+        var CHART_DEFAULTS = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: CSS_VARS.text2, font: { family: 'Instrument Sans', size: 12 } } } },
+        };
+
+        function fmt(v) { return 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+        function fmtK(v) { return v >= 1000 ? 'R$ ' + (v/1000).toFixed(1).replace('.', ',') + 'k' : fmt(v); }
+
+        /* Paleta de cores para gráficos */
+        var PALETTE = ['#999999','#6b8e6b','#c27878','#c9a84c','#7ba7bc','#b07dba','#d4956a','#6b9e9e'];
+
+        /* ─────────────────────────────────────────
+           DADOS
+        ───────────────────────────────────────── */
+        var allPedidos  = TechWear.getPedidos();
+        var allProdutos = TechWear.getProdutos();
+        var periodoMeses = 3; // padrão
+
+        /* Filtra pedidos pelo período selecionado */
+        function pedidosFiltrados() {
+            if (periodoMeses === 0) return allPedidos;
+            var corte = new Date();
+            corte.setMonth(corte.getMonth() - periodoMeses);
+            return allPedidos.filter(function(p) { return new Date(p.data) >= corte; });
+        }
+
+        /* Agrupa pedidos por mês → { "2026-03": {receita, pedidos, itens} } */
+        function agruparPorMes(lista) {
+            var mapa = {};
+            lista.forEach(function(p) {
+                var d   = new Date(p.data);
+                var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+                if (!mapa[key]) mapa[key] = { receita: 0, pedidos: 0, itens: 0 };
+                mapa[key].receita  += p.total || 0;
+                mapa[key].pedidos  += 1;
+                (p.itens || []).forEach(function(it) { mapa[key].itens += it.quantidade || 0; });
+            });
+            return mapa;
+        }
+
+        /* Meses ordenados para eixo X */
+        function mesesOrdenados(mapa) {
+            return Object.keys(mapa).sort();
+        }
+
+        function labelMes(key) {
+            var parts = key.split('-');
+            var nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+            return nomes[parseInt(parts[1]) - 1] + '/' + parts[0].slice(2);
+        }
+
+        /* ─────────────────────────────────────────
+           REGRESSÃO LINEAR SIMPLES
+        ───────────────────────────────────────── */
+        function regressaoLinear(valores) {
+            var n = valores.length;
+            if (n < 2) return { m: 0, b: valores[0] || 0 };
+            var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            for (var i = 0; i < n; i++) {
+                sumX  += i;
+                sumY  += valores[i];
+                sumXY += i * valores[i];
+                sumX2 += i * i;
+            }
+            var m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            var b = (sumY - m * sumX) / n;
+            return { m: m, b: b };
+        }
+
+        function previsaoProximo(valores) {
+            var r = regressaoLinear(valores);
+            return Math.max(0, r.m * valores.length + r.b);
+        }
+
+        /* R² para confiança */
+        function rQuadrado(valores) {
+            var n = valores.length;
+            if (n < 2) return 0;
+            var r = regressaoLinear(valores);
+            var media = valores.reduce(function(a, b) { return a + b; }, 0) / n;
+            var ssTot = 0, ssRes = 0;
+            for (var i = 0; i < n; i++) {
+                var pred = r.m * i + r.b;
+                ssTot += Math.pow(valores[i] - media, 2);
+                ssRes += Math.pow(valores[i] - pred, 2);
+            }
+            return ssTot === 0 ? 0 : Math.max(0, 1 - ssRes / ssTot);
+        }
+
+        /* ─────────────────────────────────────────
+           INSTÂNCIAS DOS GRÁFICOS (para destruir ao atualizar)
+        ───────────────────────────────────────── */
+        var chartInstances = {};
+
+        function destroyChart(id) {
+            if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+        }
+
+        /* ─────────────────────────────────────────
+           RENDER KPIs
+        ───────────────────────────────────────── */
+        function renderKPIs(pedidos) {
+            var receita = pedidos.reduce(function(a, p) { return a + (p.total || 0); }, 0);
+            var qtdPed  = pedidos.length;
+            var qtdItens = pedidos.reduce(function(a, p) {
+                return a + (p.itens || []).reduce(function(b, it) { return b + (it.quantidade || 0); }, 0);
+            }, 0);
+            var ticket   = qtdPed > 0 ? receita / qtdPed : 0;
+
+            /* Compara com período anterior */
+            var corteAtual  = new Date();
+            var corteAnt    = new Date();
+            if (periodoMeses > 0) {
+                corteAtual.setMonth(corteAtual.getMonth() - periodoMeses);
+                corteAnt.setMonth(corteAnt.getMonth() - periodoMeses * 2);
+            }
+            var pedAnt  = periodoMeses === 0 ? [] : allPedidos.filter(function(p) {
+                var d = new Date(p.data);
+                return d >= corteAnt && d < corteAtual;
+            });
+            var recAnt  = pedAnt.reduce(function(a, p) { return a + (p.total || 0); }, 0);
+            var pctDelta = recAnt > 0 ? ((receita - recAnt) / recAnt * 100) : null;
+
+            var kpis = [
+                { label: 'Receita Total',     value: fmtK(receita), icon: 'payments',       delta: pctDelta, accent: true },
+                { label: 'Pedidos',           value: qtdPed,         icon: 'receipt_long',   delta: null },
+                { label: 'Itens Vendidos',    value: qtdItens,       icon: 'checkroom',      delta: null },
+                { label: 'Ticket Médio',      value: fmt(ticket),    icon: 'show_chart',     delta: null },
+            ];
+
+            document.getElementById('kpiGrid').innerHTML = kpis.map(function(k) {
+                var deltaHtml = '';
+                if (k.delta !== null && k.delta !== undefined) {
+                    var cls  = k.delta >= 0 ? 'up' : 'down';
+                    var seta = k.delta >= 0 ? '▲' : '▼';
+                    deltaHtml = '<div class="kpi-delta ' + cls + '">' + seta + ' ' + Math.abs(k.delta).toFixed(1) + '% vs período anterior</div>';
+                }
+                return '<div class="kpi-card' + (k.accent ? ' accent' : '') + '">' +
+                    '<div class="kpi-top">' +
+                    '  <div class="kpi-label">' + k.label + '</div>' +
+                    '  <div class="kpi-icon"><span class="material-symbols-outlined" style="font-size:20px;color:var(--accent-copper)">' + k.icon + '</span></div>' +
+                    '</div>' +
+                    '<div class="kpi-value">' + k.value + '</div>' +
+                    deltaHtml +
+                    '</div>';
+            }).join('');
+        }
+
+        /* ─────────────────────────────────────────
+           GRÁFICO: RECEITA AO LONGO DO TEMPO
+        ───────────────────────────────────────── */
+        function renderChartReceita(pedidos) {
+            destroyChart('receita');
+            var mapa  = agruparPorMes(pedidos);
+            var meses = mesesOrdenados(mapa);
+
+            if (meses.length === 0) {
+                document.getElementById('chartReceita').parentElement.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">bar_chart</span>Sem pedidos no período</div>';
+                return;
+            }
+
+            var receitas = meses.map(function(m) { return mapa[m].receita; });
+            var ctx = document.getElementById('chartReceita').getContext('2d');
+
+            var grad = ctx.createLinearGradient(0, 0, 0, 260);
+            grad.addColorStop(0, 'rgba(153,153,153,0.3)');
+            grad.addColorStop(1, 'rgba(153,153,153,0)');
+
+            chartInstances['receita'] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: meses.map(labelMes),
+                    datasets: [{
+                        label: 'Receita',
+                        data: receitas,
+                        borderColor: CSS_VARS.copper,
+                        backgroundColor: grad,
+                        borderWidth: 2.5,
+                        pointBackgroundColor: CSS_VARS.copper,
+                        pointRadius: 4,
+                        tension: 0.4,
+                        fill: true,
+                    }]
+                },
+                options: Object.assign({}, CHART_DEFAULTS, {
+                    scales: {
+                        x: { ticks: { color: CSS_VARS.text2, font: { size: 11 } }, grid: { color: CSS_VARS.border } },
+                        y: { ticks: { color: CSS_VARS.text2, font: { size: 11 }, callback: fmtK }, grid: { color: CSS_VARS.border } }
+                    }
+                })
+            });
+        }
+
+        /* ─────────────────────────────────────────
+           GRÁFICO: CATEGORIAS (DONUT)
+        ───────────────────────────────────────── */
+        function renderChartCategorias(pedidos) {
+            destroyChart('categorias');
+            var mapa = {};
+            pedidos.forEach(function(p) {
+                (p.itens || []).forEach(function(it) {
+                    var prod = TechWear.getProdutoPorId(it.produtoId);
+                    var cat  = prod ? prod.categoria : 'outros';
+                    mapa[cat] = (mapa[cat] || 0) + it.subtotal;
+                });
+            });
+
+            var labels = Object.keys(mapa);
+            if (labels.length === 0) return;
+
+            var ctx = document.getElementById('chartCategorias').getContext('2d');
+            chartInstances['categorias'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.map(function(l) { return l.charAt(0).toUpperCase() + l.slice(1); }),
+                    datasets: [{
+                        data: labels.map(function(l) { return mapa[l]; }),
+                        backgroundColor: PALETTE,
+                        borderColor: CSS_VARS.card,
+                        borderWidth: 3,
+                        hoverOffset: 6,
+                    }]
+                },
+                options: Object.assign({}, CHART_DEFAULTS, {
+                    cutout: '62%',
+                    plugins: Object.assign({}, CHART_DEFAULTS.plugins, {
+                        legend: { position: 'bottom', labels: { color: CSS_VARS.text2, font: { size: 11 }, padding: 12 } },
+                        tooltip: { callbacks: { label: function(ctx) { return ' ' + fmt(ctx.raw); } } }
+                    })
+                })
+            });
+        }
+
+        /* ─────────────────────────────────────────
+           GRÁFICO: TOP 5 PRODUTOS (HORIZONTAL BAR)
+        ───────────────────────────────────────── */
+        function renderChartTop(pedidos) {
+            destroyChart('top');
+            var contagem = {};
+            pedidos.forEach(function(p) {
+                (p.itens || []).forEach(function(it) {
+                    var nome = it.nome || ('Produto #' + it.produtoId);
+                    contagem[nome] = (contagem[nome] || 0) + (it.quantidade || 0);
+                });
+            });
+
+            var sorted = Object.entries(contagem).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
+            if (sorted.length === 0) return;
+
+            var ctx = document.getElementById('chartTopProdutos').getContext('2d');
+            chartInstances['top'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(function(e) {
+                        var n = e[0]; return n.length > 18 ? n.slice(0, 16) + '…' : n;
+                    }),
+                    datasets: [{
+                        label: 'Unidades',
+                        data: sorted.map(function(e) { return e[1]; }),
+                        backgroundColor: PALETTE,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: Object.assign({}, CHART_DEFAULTS, {
+                    indexAxis: 'y',
+                    plugins: Object.assign({}, CHART_DEFAULTS.plugins, {
+                        legend: { display: false }
+                    }),
+                    scales: {
+                        x: { ticks: { color: CSS_VARS.text2, font: { size: 11 } }, grid: { color: CSS_VARS.border } },
+                        y: { ticks: { color: CSS_VARS.text2, font: { size: 11 } }, grid: { display: false } }
+                    }
+                })
+            });
+        }
+
+        /* ─────────────────────────────────────────
+           GRÁFICO: TICKET MÉDIO POR MÊS (BAR)
+        ───────────────────────────────────────── */
+        function renderChartTicket(pedidos) {
+            destroyChart('ticket');
+            var mapa  = agruparPorMes(pedidos);
+            var meses = mesesOrdenados(mapa);
+            if (meses.length === 0) return;
+
+            var tickets = meses.map(function(m) {
+                return mapa[m].pedidos > 0 ? mapa[m].receita / mapa[m].pedidos : 0;
+            });
+
+            var ctx = document.getElementById('chartTicket').getContext('2d');
+            chartInstances['ticket'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: meses.map(labelMes),
+                    datasets: [{
+                        label: 'Ticket Médio',
+                        data: tickets,
+                        backgroundColor: function(context) {
+                            var val   = context.raw;
+                            var media = tickets.reduce(function(a,b){return a+b;},0) / tickets.length;
+                            return val >= media ? 'rgba(107,142,107,0.7)' : 'rgba(153,153,153,0.5)';
+                        },
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: Object.assign({}, CHART_DEFAULTS, {
+                    plugins: Object.assign({}, CHART_DEFAULTS.plugins, {
+                        legend: { display: false }
+                    }),
+                    scales: {
+                        x: { ticks: { color: CSS_VARS.text2, font: { size: 11 } }, grid: { color: CSS_VARS.border } },
+                        y: { ticks: { color: CSS_VARS.text2, font: { size: 11 }, callback: fmtK }, grid: { color: CSS_VARS.border } }
+                    }
+                })
+            });
+        }
+
+        /* ─────────────────────────────────────────
+           PREVISÃO DE VENDAS — usa TODOS os pedidos
+           para ter mais dados históricos
+        ───────────────────────────────────────── */
+        function renderForecast() {
+            destroyChart('forecast');
+
+            var mapa  = agruparPorMes(allPedidos);
+            var meses = mesesOrdenados(mapa);
+
+            if (meses.length === 0) {
+                document.getElementById('forecastKpis').innerHTML =
+                    '<div class="empty-state" style="grid-column:1/-1"><span class="material-symbols-outlined">trending_up</span>Sem histórico para gerar previsão</div>';
+                return;
+            }
+
+            var receitas = meses.map(function(m) { return mapa[m].receita; });
+            var pedidosMes = meses.map(function(m) { return mapa[m].pedidos; });
+
+            var prevReceita = previsaoProximo(receitas);
+            var prevPedidos = Math.round(previsaoProximo(pedidosMes));
+            var prevTicket  = prevPedidos > 0 ? prevReceita / prevPedidos : 0;
+            var confianca   = rQuadrado(receitas);
+
+            /* Labels + linha projetada */
+            var proxMesLabel = (function() {
+                var d = new Date();
+                d.setMonth(d.getMonth() + 1);
+                var nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+                return nomes[d.getMonth()] + '/' + String(d.getFullYear()).slice(2);
+            })();
+
+            var labels = meses.map(labelMes).concat([proxMesLabel]);
+
+            /* Dataset histórico */
+            var dadosHist = receitas.map(function(v) { return v; }).concat([null]);
+            /* Dataset projetado: só o último ponto real e o próximo */
+            var dadosPrev = new Array(receitas.length - 1).fill(null).concat([receitas[receitas.length - 1], prevReceita]);
+
+            var ctx = document.getElementById('chartForecast').getContext('2d');
+            var gradHist = ctx.createLinearGradient(0, 0, 0, 260);
+            gradHist.addColorStop(0, 'rgba(153,153,153,0.25)');
+            gradHist.addColorStop(1, 'rgba(153,153,153,0)');
+
+            chartInstances['forecast'] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Histórico',
+                            data: dadosHist,
+                            borderColor: CSS_VARS.copper,
+                            backgroundColor: gradHist,
+                            borderWidth: 2.5,
+                            pointBackgroundColor: CSS_VARS.copper,
+                            pointRadius: 4,
+                            tension: 0.4,
+                            fill: true,
+                            spanGaps: false,
+                        },
+                        {
+                            label: 'Previsão',
+                            data: dadosPrev,
+                            borderColor: CSS_VARS.gain,
+                            backgroundColor: 'rgba(107,142,107,0.12)',
+                            borderWidth: 2.5,
+                            borderDash: [6, 4],
+                            pointBackgroundColor: CSS_VARS.gain,
+                            pointRadius: function(ctx) { return ctx.dataIndex === dadosPrev.length - 1 ? 7 : 4; },
+                            tension: 0.3,
+                            fill: true,
+                            spanGaps: false,
+                        }
+                    ]
+                },
+                options: Object.assign({}, CHART_DEFAULTS, {
+                    scales: {
+                        x: { ticks: { color: CSS_VARS.text2, font: { size: 11 } }, grid: { color: CSS_VARS.border } },
+                        y: { ticks: { color: CSS_VARS.text2, font: { size: 11 }, callback: fmtK }, grid: { color: CSS_VARS.border } }
+                    }
+                })
+            });
+
+            /* KPIs da previsão */
+            var crescimento = receitas.length >= 2
+                ? ((prevReceita - receitas[receitas.length - 1]) / receitas[receitas.length - 1] * 100)
+                : 0;
+            var confPct = Math.round(confianca * 100);
+            var confTxt = confPct >= 75 ? 'Alta' : confPct >= 40 ? 'Média' : 'Baixa';
+            var confColor = confPct >= 75 ? CSS_VARS.gain : confPct >= 40 ? '#c9a84c' : CSS_VARS.loss;
+
+            document.getElementById('forecastKpis').innerHTML =
+                '<div class="forecast-kpi">' +
+                '  <div class="forecast-kpi-label">Receita Prevista</div>' +
+                '  <div class="forecast-kpi-value">' + fmtK(prevReceita) + '</div>' +
+                '  <div class="forecast-kpi-note">' + (crescimento >= 0 ? '▲' : '▼') + ' ' + Math.abs(crescimento).toFixed(1) + '% vs mês atual</div>' +
+                '</div>' +
+                '<div class="forecast-kpi">' +
+                '  <div class="forecast-kpi-label">Pedidos Previstos</div>' +
+                '  <div class="forecast-kpi-value">' + prevPedidos + '</div>' +
+                '  <div class="forecast-kpi-note">Baseado na tendência histórica</div>' +
+                '</div>' +
+                '<div class="forecast-kpi">' +
+                '  <div class="forecast-kpi-label">Confiança do Modelo</div>' +
+                '  <div class="forecast-kpi-value" style="color:' + confColor + '">' + confTxt + ' (' + confPct + '%)</div>' +
+                '  <div class="forecast-kpi-note">R² = ' + confianca.toFixed(2) + ' — quanto mais histórico, mais preciso</div>' +
+                '</div>';
+        }
+
+        /* ─────────────────────────────────────────
+           PREVISÃO DE ESTOQUE
+        ───────────────────────────────────────── */
+        function renderEstoque() {
+            /* Velocidade de venda: unidades vendidas nos últimos 30 dias */
+            var corte30 = new Date();
+            corte30.setDate(corte30.getDate() - 30);
+            var pedidos30 = allPedidos.filter(function(p) { return new Date(p.data) >= corte30; });
+
+            /* Mapa: produtoId → qtd vendida nos últimos 30 dias */
+            var velocidade = {};
+            pedidos30.forEach(function(p) {
+                (p.itens || []).forEach(function(it) {
+                    velocidade[it.produtoId] = (velocidade[it.produtoId] || 0) + (it.quantidade || 0);
+            });
+            });
+
+            /* Vendas totais por produto (para ordenar) */
+            var totalVendas = {};
+            allPedidos.forEach(function(p) {
+                (p.itens || []).forEach(function(it) {
+                    totalVendas[it.produtoId] = (totalVendas[it.produtoId] || 0) + (it.quantidade || 0);
+                });
+            });
+
+            var produtos = TechWear.getProdutos();
+
+            /* Ordena por mais vendidos */
+            produtos.sort(function(a, b) {
+                return (totalVendas[b.id] || 0) - (totalVendas[a.id] || 0);
+            });
+
+            if (produtos.length === 0) {
+                document.getElementById('stockTableWrap').innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">inventory_2</span>Nenhum produto cadastrado</div>';
+                return;
+            }
+
+            var linhas = produtos.map(function(p) {
+                var estoque    = p.estoque || 0;
+                var vel30      = velocidade[p.id] || 0;            /* unidades/30 dias */
+                var velDia     = vel30 / 30;                        /* unidades/dia */
+                var diasRestantes = velDia > 0 ? Math.floor(estoque / velDia) : Infinity;
+                var estoqueProxMes = estoque - vel30;               /* estoque estimado em 30 dias */
+                var recomendado = Math.ceil(vel30 * 1.2);           /* +20% de margem de segurança */
+                var precisaRepor = Math.max(0, recomendado - estoque);
+
+                /* Status */
+                var status, statusCls;
+                if (vel30 === 0) {
+                    status = 'Sem movimento'; statusCls = 'warn';
+                } else if (diasRestantes <= 15) {
+                    status = 'Crítico (' + diasRestantes + 'd)'; statusCls = 'danger';
+                } else if (diasRestantes <= 45) {
+                    status = 'Atenção (' + diasRestantes + 'd)'; statusCls = 'warn';
+                } else {
+                    status = 'OK (' + (diasRestantes === Infinity ? '∞' : diasRestantes + 'd') + ')'; statusCls = 'ok';
+                }
+
+                /* Barra: estoque / max(estoque, recomendado) */
+                var barMax  = Math.max(estoque, recomendado, 1);
+                var barPct  = Math.min(100, (estoque / barMax) * 100);
+                var barColor = statusCls === 'ok' ? CSS_VARS.gain : statusCls === 'warn' ? '#c9a84c' : CSS_VARS.loss;
+
+                return '<tr>' +
+                    '<td><strong>' + p.nome + '</strong><br><span style="font-size:11px;color:var(--text-secondary)">' + (p.categoria || '') + '</span></td>' +
+                    '<td style="text-align:center">' +
+                    '  <div style="font-weight:700;margin-bottom:4px;">' + estoque + '</div>' +
+                    '  <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:' + barPct + '%;background:' + barColor + '"></div></div>' +
+                    '</td>' +
+                    '<td style="text-align:center;color:var(--text-secondary)">' + (vel30 > 0 ? vel30 + ' un/mês' : '—') + '</td>' +
+                    '<td style="text-align:center">' + Math.max(0, estoqueProxMes) + ' un</td>' +
+                    '<td style="text-align:center;font-weight:700;color:' + (precisaRepor > 0 ? CSS_VARS.loss : CSS_VARS.gain) + '">' +
+                    (precisaRepor > 0 ? '+' + precisaRepor + ' un' : '✓') +
+                    '</td>' +
+                    '<td><span class="stock-status ' + statusCls + '">' + status + '</span></td>' +
+                    '</tr>';
+            }).join('');
+
+            document.getElementById('stockTableWrap').innerHTML =
+                '<table class="stock-table">' +
+                '<thead><tr>' +
+                '<th>Produto</th>' +
+                '<th style="text-align:center">Estoque Atual</th>' +
+                '<th style="text-align:center">Velocidade</th>' +
+                '<th style="text-align:center">Estoque em 30 dias</th>' +
+                '<th style="text-align:center">Reposição Necessária</th>' +
+                '<th>Status</th>' +
+                '</tr></thead>' +
+                '<tbody>' + linhas + '</tbody>' +
+                '</table>';
+        }
+
+        /* ─────────────────────────────────────────
+           RENDER COMPLETO
+        ───────────────────────────────────────── */
+        function renderTudo() {
+            var pedidos = pedidosFiltrados();
+            renderKPIs(pedidos);
+            renderChartReceita(pedidos);
+            renderChartCategorias(pedidos);
+            renderChartTop(pedidos);
+            renderChartTicket(pedidos);
+            renderForecast();   /* sempre usa todos os dados */
+            renderEstoque();    /* sempre usa todos os dados */
+        }
+
+        /* ─────────────────────────────────────────
+           PERÍODO TABS
+        ───────────────────────────────────────── */
+        document.getElementById('periodTabs').addEventListener('click', function(e) {
+            var btn = e.target.closest('.period-tab');
+            if (!btn) return;
+            document.querySelectorAll('.period-tab').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            periodoMeses = parseInt(btn.dataset.months);
+            renderTudo();
+        });
+
+        /* ─────────────────────────────────────────
+           SEED DE DADOS DE DEMONSTRAÇÃO
+        ───────────────────────────────────────── */
+        var SEED_KEY = 'tw_demo_seed';
+
+        var PRODUTOS_SEED = [
+            { id: 1, nome: 'Jaqueta Tech Runner',      preco: 349.90, categoria: 'jaquetas'  },
+            { id: 2, nome: 'Calça Jogger Sport',        preco: 189.90, categoria: 'calcas'    },
+            { id: 3, nome: 'Camiseta Performance UV',   preco:  99.90, categoria: 'camisetas' },
+            { id: 4, nome: 'Moletom Urban Fit',         preco: 259.90, categoria: 'moletons'  },
+            { id: 5, nome: 'Shorts Training Pro',       preco: 119.90, categoria: 'shorts'    },
+            { id: 6, nome: 'Regata Dry Motion',         preco:  79.90, categoria: 'camisetas' },
+            { id: 7, nome: 'Jaqueta Windbreaker',       preco: 279.90, categoria: 'jaquetas'  },
+            { id: 8, nome: 'Calça Legging Flex',        preco: 149.90, categoria: 'calcas'    },
+        ];
+
+        var TAMANHOS = ['P', 'M', 'G', 'GG'];
+        var ENDERECOS = [
+            { nome: 'Carlos Mendes',  cep: '01310-100', endereco: 'Av. Paulista, 1000', cidade: 'São Paulo', estado: 'SP' },
+            { nome: 'Ana Souza',      cep: '20040-020', endereco: 'Av. Rio Branco, 200', cidade: 'Rio de Janeiro', estado: 'RJ' },
+            { nome: 'Pedro Lima',     cep: '30130-110', endereco: 'Av. Afonso Pena, 500', cidade: 'Belo Horizonte', estado: 'MG' },
+            { nome: 'Julia Castro',   cep: '80010-010', endereco: 'Rua XV de Novembro, 300', cidade: 'Curitiba', estado: 'PR' },
+            { nome: 'Marcos Vieira',  cep: '90010-190', endereco: 'Av. Borges de Medeiros, 50', cidade: 'Porto Alegre', estado: 'RS' },
+        ];
+
+        function rnd(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+        function escolha(arr)  { return arr[rnd(0, arr.length - 1)]; }
+
+        function gerarPedidoFake(dataBase, fatorCrescimento) {
+            /* número de itens: 1-3 produtos por pedido */
+            var qtdItens = rnd(1, 3);
+            var itensUsados = [];
+            var prodsCopy = PRODUTOS_SEED.slice().sort(function() { return Math.random() - 0.5; });
+            var total = 0;
+            var itens = [];
+
+            for (var i = 0; i < qtdItens; i++) {
+                var prod = prodsCopy[i % prodsCopy.length];
+                var qtd  = rnd(1, 3);
+                var sub  = prod.preco * qtd;
+                total   += sub;
+                itens.push({
+                    produtoId: prod.id,
+                    nome:      prod.nome,
+                    preco:     prod.preco,
+                    tamanho:   escolha(TAMANHOS),
+                    quantidade: qtd,
+                    subtotal:  sub
+                });
+            }
+
+            /* aplica pequena variação aleatória para não parecer mecânico */
+            var variacao = (Math.random() * 0.3 - 0.1) * fatorCrescimento;
+            total = Math.round(total * (1 + variacao) * 100) / 100;
+
+            var end = escolha(ENDERECOS);
+
+            return {
+                id:          dataBase.getTime() + rnd(1, 9999),
+                usuarioId:   1,
+                itens:       itens,
+                total:       total,
+                endereco:    end,
+                status:      'Confirmado',
+                data:        dataBase.toISOString(),
+                _demo:       true
+            };
+        }
+
+        window.seedDemoData = function() {
+            var btn = document.getElementById('btnSeedDemo');
+            btn.disabled = true;
+            btn.textContent = 'Gerando...';
+
+            var pedidos = TechWear.getPedidos();
+
+            /* Gera ~150 pedidos distribuídos pelos últimos 12 meses */
+            /* com tendência crescente: meses mais recentes têm mais pedidos */
+            var agora = new Date();
+            var novos = [];
+
+            for (var mes = 11; mes >= 0; mes--) {
+                /* Fator de crescimento: mais pedidos em meses recentes */
+                var fator = 1 + (11 - mes) * 0.08;
+                /* Quantidade de pedidos nesse mês: entre 8 e 18, crescente */
+                var qtdPedidos = Math.round(rnd(6, 12) * fator);
+
+                for (var p = 0; p < qtdPedidos; p++) {
+                    /* Distribui os pedidos aleatoriamente ao longo do mês */
+                    var d = new Date(agora.getFullYear(), agora.getMonth() - mes, rnd(1, 28),
+                                     rnd(8, 22), rnd(0, 59));
+                    novos.push(gerarPedidoFake(d, fator));
+                }
+            }
+
+            /* Salva no localStorage junto com pedidos reais */
+            var todos = pedidos.concat(novos);
+            localStorage.setItem('tw_pedidos', JSON.stringify(todos));
+            localStorage.setItem(SEED_KEY, '1');
+
+            /* Recarrega dados e re-renderiza */
+            allPedidos = TechWear.getPedidos();
+            renderTudo();
+            checkBanners();
+        };
+
+        window.clearDemoData = function() {
+            var pedidos = TechWear.getPedidos().filter(function(p) { return !p._demo; });
+            localStorage.setItem('tw_pedidos', JSON.stringify(pedidos));
+            localStorage.removeItem(SEED_KEY);
+            allPedidos = TechWear.getPedidos();
+            renderTudo();
+            checkBanners();
+        };
+
+        function checkBanners() {
+            var temDemo   = localStorage.getItem(SEED_KEY) === '1';
+            var temPedidos = allPedidos.length > 0;
+            var demoBanner  = document.getElementById('demoBanner');
+            var clearBanner = document.getElementById('clearBanner');
+            var btnSeed     = document.getElementById('btnSeedDemo');
+            var btnClear    = document.getElementById('btnClearDemo');
+            demoBanner.style.display  = (!temPedidos && !temDemo) ? 'flex' : 'none';
+            clearBanner.style.display = temDemo ? 'flex' : 'none';
+            if (btnSeed)  btnSeed.style.display  = temDemo ? 'none'  : 'flex';
+            if (btnClear) btnClear.style.display = temDemo ? 'flex'  : 'none';
+        }
+
+        /* ─────────────────────────────────────────
+           INIT
+        ───────────────────────────────────────── */
+        renderTudo();
+        checkBanners();
+
+    })();
+    </script>
+</body>
+</html>

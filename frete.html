@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcular Frete - Tech Wear</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/templatemo-crypto-style.css">
+    <link rel="stylesheet" href="css/templatemo-crypto-pages.css">
+    <style>
+        /* ========== FRETE PAGE ========== */
+        .frete-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1100px) {
+            .frete-layout { grid-template-columns: 1fr; }
+        }
+
+        /* -- Stepper -- */
+        .stepper {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 32px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .step.active .step-circle {
+            background: var(--accent-copper);
+            border-color: var(--accent-copper);
+            color: #1c1c1e;
+        }
+        .step.done .step-circle {
+            background: var(--gain);
+            border-color: var(--gain);
+            color: #fff;
+        }
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .step.active .step-label { color: var(--text-primary); }
+        .step.done .step-label { color: var(--gain); }
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            margin: 0 8px;
+        }
+        .step-line.done { background: var(--gain); }
+
+        /* -- Sections -- */
+        .frete-section { display: none; }
+        .frete-section.active { display: block; }
+
+        /* -- Fields -- */
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .field-row.triple {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .field-row.full { grid-template-columns: 1fr; }
+
+        @media (max-width: 600px) {
+            .field-row, .field-row.triple { grid-template-columns: 1fr; }
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 7px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-copper);
+        }
+        .form-input.readonly {
+            color: var(--text-secondary);
+            cursor: default;
+        }
+        .input-with-btn {
+            display: flex;
+            gap: 10px;
+        }
+        .input-with-btn .form-input { flex: 1; }
+
+        /* -- Itens do pedido -- */
+        .item-list { margin-bottom: 24px; }
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 40px;
+            gap: 12px;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .item-row:last-child { border-bottom: none; }
+        .item-row .form-input, .item-row .form-select {
+            padding: 9px 12px;
+            font-size: 14px;
+        }
+        .item-remove-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--loss);
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .item-remove-btn:hover {
+            background: var(--loss);
+            color: #fff;
+            border-color: var(--loss);
+        }
+        .item-row-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 40px;
+            gap: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 4px;
+        }
+        .item-row-header span {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        /* -- Volume info tag -- */
+        .volume-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .volume-tag.ok { background: rgba(107,142,107,0.2); color: var(--gain); border: 1px solid var(--gain); }
+        .volume-tag.warn { background: rgba(194,120,120,0.2); color: var(--loss); border: 1px solid var(--loss); }
+
+        /* -- Resultado -- */
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            position: sticky;
+            top: 24px;
+        }
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .result-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .result-line:last-child { border-bottom: none; }
+        .result-line .label { color: var(--text-secondary); }
+        .result-line .value { font-weight: 600; color: var(--text-primary); }
+        .result-line.total .label,
+        .result-line.total .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .result-line.highlight .value { color: var(--accent-copper); }
+        .result-frete-gratis {
+            text-align: center;
+            padding: 16px;
+            background: rgba(107,142,107,0.15);
+            border: 1px solid var(--gain);
+            border-radius: 10px;
+            color: var(--gain);
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* -- Veículo seletor -- */
+        .veiculo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .veiculo-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-card);
+        }
+        .veiculo-card:hover { border-color: var(--accent-copper); }
+        .veiculo-card.selected {
+            border-color: var(--accent-copper);
+            background: rgba(153,153,153,0.08);
+        }
+        .veiculo-icon { font-size: 28px; margin-bottom: 8px; }
+        .veiculo-nome { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+        .veiculo-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .veiculo-params { font-size: 11px; color: var(--text-muted, var(--text-secondary)); margin-top: 6px; }
+
+        /* -- Buttons -- */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn-frete {
+            flex: 1;
+            padding: 13px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        .btn-frete:hover { border-color: var(--accent-copper); background: var(--bg-card-hover, var(--bg-secondary)); }
+        .btn-frete.primary {
+            background: var(--accent-gradient, var(--accent-copper));
+            border: none;
+            color: #1c1c1e;
+        }
+        .btn-frete.primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-frete:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* -- Breakdown impostos -- */
+        .breakdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: var(--accent-copper);
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+            user-select: none;
+        }
+        .breakdown-body { display: none; margin-top: 10px; }
+        .breakdown-body.open { display: block; }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 5px 0;
+            color: var(--text-secondary);
+        }
+
+        /* -- Prazo de entrega -- */
+        .prazo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(153,153,153,0.12);
+            border: 1px solid var(--accent-copper);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-copper);
+            margin-top: 12px;
+        }
+
+        /* -- Score prioridade -- */
+        .score-bar-wrap {
+            margin-top: 6px;
+        }
+        .score-bar-bg {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .score-bar-fill {
+            height: 100%;
+            background: var(--accent-gradient, var(--accent-copper));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* -- Aviso -- */
+        .aviso-box {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .aviso-box.info { background: rgba(99,149,210,0.12); border: 1px solid rgba(99,149,210,0.4); color: #8ab4e0; }
+        .aviso-box.warn { background: rgba(194,120,120,0.12); border: 1px solid var(--loss); color: var(--loss); }
+        .aviso-box.success { background: rgba(107,142,107,0.15); border: 1px solid var(--gain); color: var(--gain); }
+
+        /* -- Responsivo -- */
+        @media (max-width: 768px) {
+            .veiculo-grid { grid-template-columns: 1fr; }
+            .item-row, .item-row-header {
+                grid-template-columns: 1fr 80px 80px 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <div class="hamburger"><span></span><span></span><span></span></div>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="sidebar logo.png" alt="imagem" style="height: 40px; border-radius: 6px; object-fit: cover;">
+            </div>
+            <nav class="nav-section">
+                <div class="nav-label">Menu</div>
+                <a href="index.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">grid_view</span>
+                    Inicio
+                </a>
+                <a href="markets.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">checkroom</span>
+                    Coleção
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">shopping_cart</span>
+                    Carrinho
+                </a>
+                <a href="wearia.html" class="nav-item">
+                    <span class="nav-icon material-symbols-outlined">auto_awesome</span>
+                    WearIA
+                </a>
+                <a href="frete.html" class="nav-item active">
+                    <span class="nav-icon material-symbols-outlined">local_shipping</span>
+                    Frete
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="dashboard.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                    Dashboard
+                </a>
+                <a href="admin.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">shield</span>
+                    Admin
+                </a>
+                <a href="settings.html" class="logout-btn" style="text-decoration:none;">
+                    <span class="material-symbols-outlined">person</span>
+                    Meu Perfil
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Simulador de Frete</h1>
+                <p>
+                    <span style="background:rgba(153,153,153,0.15);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-right:10px;color:var(--text-secondary);">Painel Operacional</span>
+                    Ferramenta interna para simular e auditar custos logísticos (ANTT) com detalhamento completo
+                </p>
+            </div>
+
+            <!-- Stepper -->
+            <div class="stepper" id="stepper">
+                <div class="step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Itens do Pedido</div>
+                </div>
+                <div class="step-line" id="line12"></div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Endereço e Entrega</div>
+                </div>
+                <div class="step-line" id="line23"></div>
+                <div class="step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Resultado</div>
+                </div>
+            </div>
+
+            <div class="frete-layout">
+
+                <!-- COLUNA ESQUERDA: Formulários -->
+                <div>
+
+                    <!-- ========== ETAPA 1: Itens ========== -->
+                    <div class="frete-section active" id="sec1">
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom:20px;">
+                                <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px;">inventory_2</span>
+                                Itens do Pedido
+                            </h3>
+
+                            <div class="aviso-box info">
+                                <span class="material-symbols-outlined" style="flex-shrink:0;font-size:18px;">info</span>
+                                <span>Adicione os produtos do pedido. O volume de cubagem é calculado automaticamente conforme embalagem sugerida (Polymailer ou Caixa).</span>
+                            </div>
+
+                            <!-- Cabeçalho da tabela -->
+                            <div class="item-row-header">
+                                <span>Tipo de Roupa</span>
+                                <span>Qtd</span>
+                                <span>Vol. Unitário</span>
+                                <span></span>
+                            </div>
+
+                            <!-- Lista dinâmica de itens -->
+                            <div class="item-list" id="itemList"></div>
+
+                            <!-- Adicionar item -->
+                            <button class="btn-frete" id="btnAddItem" style="width:100%;margin-top:4px;">
+                                <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;">add</span>
+                                Adicionar Item
+                            </button>
+
+                            <!-- Resumo de volume -->
+                            <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+                                <div class="field-row triple">
+                                    <div>
+                                        <div class="form-label">Volume Real (m³)</div>
+                                        <div class="form-input readonly" id="displayVreal" style="display:flex;align-items:center;color:var(--text-primary);">0,000</div>
+                                    </div>
+                                    <div>
+                                        <div class="form-label">Embalagens</div>
+                                        <div class="form-input readonly" id="displayEmb" style="display:flex;align-items:center;color:var(--text-primary);">—</div>
+                                    </div>
+                                    <div>
+                                        <div class="form-label">Status</div>
+                                        <div id="displayStatus" style="margin-top:4px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-row">
+                                <button class="btn-frete primary" id="btnStep1Next">
+                                    Próximo: Endereço
+                                    <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;margin-left:6px;">arrow_forward</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== ETAPA 2: Endereço e Entrega ========== -->
+                    <div class="frete-section" id="sec2">
+                        <div class="card" style="margin-bottom:20px;">
+                            <h3 class="card-title" style="margin-bottom:20px;">
+                                <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px;">location_on</span>
+                                Endereço de Destino
+                            </h3>
+
+                            <div class="field-row">
+                                <div class="form-group">
+                                    <label class="form-label">CEP de Destino *</label>
+                                    <div class="input-with-btn">
+                                        <input type="text" class="form-input" id="cepDestino" placeholder="00000-000" maxlength="9">
+                                        <button class="btn-frete" id="btnBuscarCep" style="flex:0 0 auto;width:auto;padding:11px 16px;">
+                                            <span class="material-symbols-outlined" style="font-size:18px;">search</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Estado (UF) *</label>
+                                    <select class="form-select" id="ufDestino">
+                                        <option value="">Selecione</option>
+                                        <option>AC</option><option>AL</option><option>AM</option><option>AP</option>
+                                        <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                                        <option>GO</option><option>MA</option><option>MG</option><option>MS</option>
+                                        <option>MT</option><option>PA</option><option>PB</option><option>PE</option>
+                                        <option>PI</option><option>PR</option><option>RJ</option><option>RN</option>
+                                        <option>RO</option><option>RR</option><option>RS</option><option>SC</option>
+                                        <option>SE</option><option>SP</option><option>TO</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="field-row">
+                                <div class="form-group">
+                                    <label class="form-label">Cidade</label>
+                                    <input type="text" class="form-input" id="cidadeDestino" placeholder="Preenchido pelo CEP">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Bairro</label>
+                                    <input type="text" class="form-input" id="bairroDestino" placeholder="Preenchido pelo CEP">
+                                </div>
+                            </div>
+
+                            <div class="field-row full">
+                                <div class="form-group">
+                                    <label class="form-label">Endereço (Rua e Número)</label>
+                                    <input type="text" class="form-input" id="enderecoDestino" placeholder="Rua, número, complemento">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">UF de Origem</label>
+                                <select class="form-select" id="ufOrigem">
+                                    <option value="SP" selected>SP — São Paulo (padrão)</option>
+                                    <option value="RJ">RJ — Rio de Janeiro</option>
+                                    <option value="MG">MG — Minas Gerais</option>
+                                    <option value="RS">RS — Rio Grande do Sul</option>
+                                    <option value="PR">PR — Paraná</option>
+                                    <option value="SC">SC — Santa Catarina</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Distância ao Destino (km) *</label>
+                                <div class="input-with-btn">
+                                    <input type="number" class="form-input" id="distanciaKm" placeholder="ex: 500" min="1" max="10000">
+                                    <button class="btn-frete" id="btnDistCapital" style="flex:0 0 auto;width:auto;padding:11px 12px;font-size:12px;white-space:nowrap;">
+                                        Usar tabela
+                                    </button>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-secondary);margin-top:5px;">Informe a distância rodoviária ou use a tabela de capitais.</div>
+                            </div>
+                        </div>
+
+                        <!-- Veículo e parâmetros de entrega -->
+                        <div class="card" style="margin-bottom:20px;">
+                            <h3 class="card-title" style="margin-bottom:20px;">
+                                <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px;">directions_car</span>
+                                Tipo de Veículo
+                            </h3>
+
+                            <div class="veiculo-grid">
+                                <div class="veiculo-card" data-veiculo="moto" onclick="selecionarVeiculo('moto')">
+                                    <div class="veiculo-icon">🛵</div>
+                                    <div class="veiculo-nome">Motoboy</div>
+                                    <div class="veiculo-desc">Entregas expressas e rotas longas</div>
+                                    <div class="veiculo-params">v=40km/h · fh=0,9 · Krota=1,1 · ts=4min</div>
+                                </div>
+                                <div class="veiculo-card selected" data-veiculo="van" onclick="selecionarVeiculo('van')">
+                                    <div class="veiculo-icon">🚐</div>
+                                    <div class="veiculo-nome">Van / Fiorino</div>
+                                    <div class="veiculo-desc">Alta densidade no mesmo bairro (500kg / 3,3m³)</div>
+                                    <div class="veiculo-params">v=50km/h · fh=0,7 · Krota=1,3 · ts=7min</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parâmetros avançados de prazo -->
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom:20px;">
+                                <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px;">schedule</span>
+                                Parâmetros de Prazo
+                            </h3>
+
+                            <div class="field-row">
+                                <div class="form-group">
+                                    <label class="form-label">Clientes na fila antes (n)</label>
+                                    <input type="number" class="form-input" id="paramN" value="3" min="0" max="200">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Horário do Despacho</label>
+                                    <select class="form-select" id="paramHorario">
+                                        <option value="normal">Horário Normal (fh=0,9 moto / 0,7 van)</option>
+                                        <option value="pico">Horário de Pico 17h–19h (fh=0,85 moto / 0,5 van)</option>
+                                        <option value="madrugada">Madrugada (fh=1,0 moto / 1,0 van)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="field-row">
+                                <div class="form-group">
+                                    <label class="form-label">Margem adicional (chuva etc.) — horas</label>
+                                    <input type="number" class="form-input" id="paramMargem" value="0" min="0" step="0.25">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Preparo no CD (horas)</label>
+                                    <input type="number" class="form-input" id="paramTprep" value="0.5" min="0" step="0.25">
+                                </div>
+                            </div>
+
+                            <!-- Score de prioridade -->
+                            <div style="padding-top:16px;border-top:1px solid var(--border);">
+                                <div class="form-label" style="margin-bottom:12px;">Score de Prioridade (Sp)</div>
+                                <div class="field-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Urgência (1–10)</label>
+                                        <input type="range" class="form-input" id="paramUrgencia" min="1" max="10" value="5" style="padding:6px 0;cursor:pointer;">
+                                        <div style="text-align:center;font-size:13px;color:var(--accent-copper);font-weight:700;" id="urgenciaVal">5</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Densidade (1–10)</label>
+                                        <input type="range" class="form-input" id="paramDensidade" min="1" max="10" value="5" style="padding:6px 0;cursor:pointer;">
+                                        <div style="text-align:center;font-size:13px;color:var(--accent-copper);font-weight:700;" id="densidadeVal">5</div>
+                                    </div>
+                                </div>
+                                <div style="margin-top:6px;">
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                                        <span style="font-size:13px;color:var(--text-secondary);">Score calculado</span>
+                                        <span style="font-size:14px;font-weight:700;color:var(--accent-copper);" id="scoreSp">5,0</span>
+                                    </div>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" id="scoreBar" style="width:50%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-row">
+                                <button class="btn-frete" id="btnStep2Back">
+                                    <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;margin-right:6px;">arrow_back</span>
+                                    Voltar
+                                </button>
+                                <button class="btn-frete primary" id="btnCalcular">
+                                    <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;margin-right:6px;">calculate</span>
+                                    Calcular Frete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== ETAPA 3: Resultado ========== -->
+                    <div class="frete-section" id="sec3">
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom:20px;">
+                                <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px;">check_circle</span>
+                                Resultado do Cálculo
+                            </h3>
+
+                            <div id="resultContent"></div>
+
+                            <div class="btn-row">
+                                <button class="btn-frete" id="btnNovoCalculo">
+                                    <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;margin-right:6px;">restart_alt</span>
+                                    Novo Cálculo
+                                </button>
+                                <button class="btn-frete primary" id="btnIrCarrinho" onclick="window.location.href='wallet.html'">
+                                    <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;margin-right:6px;">shopping_cart</span>
+                                    Ver Carrinho
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- /coluna esquerda -->
+
+                <!-- COLUNA DIREITA: Resumo em tempo real -->
+                <div>
+                    <div class="result-card" id="sideResult">
+                        <div class="result-title">
+                            <span class="material-symbols-outlined">receipt_long</span>
+                            Resumo
+                        </div>
+                        <div class="result-line">
+                            <span class="label">Itens no pedido</span>
+                            <span class="value" id="srItens">—</span>
+                        </div>
+                        <div class="result-line">
+                            <span class="label">Volume cobrável</span>
+                            <span class="value" id="srVolume">—</span>
+                        </div>
+                        <div class="result-line">
+                            <span class="label">Distância</span>
+                            <span class="value" id="srDistancia">—</span>
+                        </div>
+                        <div class="result-line">
+                            <span class="label">UF Destino</span>
+                            <span class="value" id="srUF">—</span>
+                        </div>
+                        <div class="result-line highlight">
+                            <span class="label">Custo Logístico Real</span>
+                            <span class="value" id="srCustoReal">—</span>
+                        </div>
+                        <div class="result-line total">
+                            <span class="label">Preço ao Cliente</span>
+                            <span class="value" id="srPrecoCliente">—</span>
+                        </div>
+                        <div class="result-frete-gratis" id="srFreteGratis">
+                            🎉 Frete Grátis! (pedido ≥ R$ 200,00)
+                        </div>
+                        <div id="srPrazo" style="margin-top:12px;display:none;">
+                            <div class="prazo-badge">
+                                <span class="material-symbols-outlined" style="font-size:16px;">schedule</span>
+                                <span id="prazoTexto">—</span>
+                            </div>
+                        </div>
+
+                        <!-- Constantes do sistema -->
+                        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+                            <div style="font-size:11px;color:var(--text-secondary);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Constantes do Sistema</div>
+                            <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+                                Taxa ANTT: R$ 3,8866/km<br>
+                                Base consolidação: 2,64 m³<br>
+                                Margem + Seguro: 1,3015×<br>
+                                Descarga fixa: R$ 436,39<br>
+                                Pedágio: R$ 20/100km<br>
+                                Frete grátis ≥ R$ 200,00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /frete-layout -->
+
+            <!-- Modal: tabela de capitais -->
+            <div class="product-modal-overlay" id="modalCapitais">
+                <div class="product-modal" style="max-width:560px;">
+                    <button class="modal-close" id="closeModalCapitais">&times;</button>
+                    <h2 style="margin-bottom:20px;">Distâncias entre Capitais (km)</h2>
+                    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Selecione a capital de destino. Origem: <strong id="capitalOrigemLabel">SP</strong></p>
+                    <div id="tabelaCapitais" style="overflow-x:auto;"></div>
+                </div>
+            </div>
+
+            <footer class="copyright">
+                Tech Wear &copy; 2026 Tech Wear. Designed by Tech Wear Team.
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/produtos.js"></script>
+    <script src="js/templatemo-crypto-script.js"></script>
+    <script>
+    (function() {
+        /* ===== CONSTANTES (conforme PDF) ===== */
+        var C = {
+            TAXA_ANTT:      3.8866,   // R$/km
+            V_POLYMAILER:   0.005,    // m³
+            V_CAIXA:        0.096,    // m³
+            V_BASE_CONSOL:  2.64,     // m³ (80% de 3,3m³)
+            CAP_PESO:       500,      // kg
+            CAP_VOL:        3.3,      // m³
+            DESCARGA:       436.39,   // R$
+            PEDAGIO_UNIT:   20,       // R$ a cada 100km
+            MARGEM_SEG:     1.3015,   // margem 30% + seguro 0,15%
+            PIS:            0.0165,
+            COFINS:         0.076,
+            LIMITE_FRETE_GRATIS: 200, // R$
+        };
+
+        /* ===== ICMS por UF (interno | interestadual) ===== */
+        var ICMS_TABLE = {
+            AC:{int:0.07,int_est:0.12}, AL:{int:0.07,int_est:0.12}, AM:{int:0.07,int_est:0.12},
+            AP:{int:0.07,int_est:0.12}, BA:{int:0.07,int_est:0.12}, CE:{int:0.07,int_est:0.12},
+            DF:{int:0.07,int_est:0.12}, ES:{int:0.07,int_est:0.12}, GO:{int:0.07,int_est:0.12},
+            MA:{int:0.07,int_est:0.12}, MG:{int:0.12,int_est:0.12}, MS:{int:0.07,int_est:0.12},
+            MT:{int:0.07,int_est:0.12}, PA:{int:0.07,int_est:0.12}, PB:{int:0.07,int_est:0.12},
+            PE:{int:0.07,int_est:0.12}, PI:{int:0.07,int_est:0.12}, PR:{int:0.12,int_est:0.00},
+            RJ:{int:0.12,int_est:0.12}, RN:{int:0.07,int_est:0.12}, RO:{int:0.07,int_est:0.12},
+            RR:{int:0.07,int_est:0.12}, RS:{int:0.07,int_est:0.00}, SC:{int:0.12,int_est:0.12},
+            SE:{int:0.07,int_est:0.12}, SP:{int:0.12,int_est:0.12}, TO:{int:0.07,int_est:0.12}
+        };
+
+        /* ===== DISTÂNCIAS ENTRE CAPITAIS (km) ===== */
+        var DIST_TABLE = {
+            SP:{SP:0,   RJ:430,  MG:590,  RS:1200, BA:1200, PE:2300, CE:2600, AM:3800, PR:400,  GO:870,  MS:980,  MT:1620, DF:1010},
+            RJ:{SP:430, RJ:0,    MG:560,  RS:1600, BA:1600, PE:2100, CE:2400, AM:4200, PR:800,  GO:1140, MS:1400, MT:1980, DF:1150},
+            MG:{SP:590, RJ:560,  MG:0,    RS:1400, BA:1000, PE:1900, CE:2200, AM:4000, PR:750,  GO:740,  MS:1090, MT:1570, DF:620},
+            RS:{SP:1200,RJ:1600, MG:1400, RS:0,    BA:2100, PE:2900, CE:3200, AM:5200, PR:720,  GO:1680, MS:1380, MT:1870, DF:1860},
+            BA:{SP:1200,RJ:1600, MG:1000, RS:2100, BA:0,    PE:850,  CE:1150, AM:3600, PR:1620, GO:930,  MS:1690, MT:1960, DF:1200},
+            PE:{SP:2300,RJ:2100, MG:1900, RS:2900, BA:850,  PE:0,    CE:800,  AM:3300, PR:2480, GO:1670, MS:2410, MT:2640, DF:2050},
+            CE:{SP:2600,RJ:2400, MG:2200, RS:3200, BA:1150, PE:800,  CE:0,    AM:2900, PR:2780, GO:1880, CE:0,    MT:2930, DF:2290},
+            AM:{SP:3800,RJ:4200, MG:4000, RS:5200, BA:3600, PE:3300, CE:2900, AM:0,    PR:4000, GO:3380, MS:3580, MT:3130, DF:3490}
+        };
+
+        /* ===== PRODUTOS disponíveis ===== */
+        var TIPOS_ROUPA = [
+            {id:'camiseta', nome:'Camiseta',     vol:0.005,  emb:'Polymailer', maxCaixa:50},
+            {id:'short',    nome:'Short',        vol:0.0075, emb:'Polymailer', maxCaixa:30},
+            {id:'jaqueta',  nome:'Jaqueta',      vol:0.015,  emb:'Caixa',      maxCaixa:15},
+            {id:'calca',    nome:'Calça / Legging', vol:0.0075, emb:'Polymailer', maxCaixa:30},
+            {id:'moletom',  nome:'Moletom',      vol:0.012,  emb:'Caixa',      maxCaixa:20},
+            {id:'top',      nome:'Top Esportivo',vol:0.004,  emb:'Polymailer', maxCaixa:60},
+            {id:'tenis',    nome:'Tênis',        vol:0.020,  emb:'Caixa',      maxCaixa:10},
+            {id:'acessorio',nome:'Acessório',    vol:0.002,  emb:'Polymailer', maxCaixa:100}
+        ];
+
+        /* ===== VEÍCULOS ===== */
+        var VEICULOS = {
+            moto: {v:40, krota:1.1, ts:4/60,  fhNormal:0.9, fhPico:0.85, fhMadrugada:1.0},
+            van:  {v:50, krota:1.3, ts:7/60,  fhNormal:0.7, fhPico:0.5,  fhMadrugada:1.0}
+        };
+
+        /* ===== STATE ===== */
+        var state = {
+            itens: [],          // [{tipo, qtd}]
+            veiculo: 'van',
+            resultado: null
+        };
+
+        /* ===== UTILITÁRIOS ===== */
+        function fmt(v) { return 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+        function fmtVol(v) { return v.toFixed(5).replace('.', ',') + ' m³'; }
+        function fmtHoras(h) {
+            var mins = Math.round(h * 60);
+            if (mins < 60) return mins + ' min';
+            return Math.floor(mins/60) + 'h ' + (mins%60) + 'min';
+        }
+
+        /* ===== TOAST ===== */
+        function showToast(msg, tipo) {
+            var ex = document.querySelector('.toast-notification');
+            if (ex) ex.remove();
+            var t = document.createElement('div');
+            t.className = 'toast-notification';
+            t.textContent = msg;
+            var bg = tipo === 'erro' ? 'var(--loss)' : 'var(--accent-copper,#999)';
+            t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:'+bg+';color:#1c1c1e;padding:14px 24px;border-radius:10px;font-weight:600;font-size:14px;z-index:9999;opacity:0;transform:translateY(20px);transition:all .3s ease;font-family:inherit;';
+            document.body.appendChild(t);
+            requestAnimationFrame(function() { t.style.opacity='1'; t.style.transform='translateY(0)'; });
+            setTimeout(function() { t.style.opacity='0'; t.style.transform='translateY(20px)'; setTimeout(function() { t.remove(); }, 300); }, 3000);
+        }
+
+        /* ===== ITENS ===== */
+        function getTipoById(id) { return TIPOS_ROUPA.find(function(t){ return t.id === id; }); }
+
+        function renderItens() {
+            var list = document.getElementById('itemList');
+            if (state.itens.length === 0) {
+                list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-secondary);font-size:14px;">Nenhum item adicionado. Clique em "+ Adicionar Item".</div>';
+            } else {
+                list.innerHTML = state.itens.map(function(item, idx) {
+                    var tipo = getTipoById(item.tipo);
+                    var volUnit = tipo ? tipo.vol : 0;
+                    var embInfo = tipo ? tipo.emb : '—';
+                    return '<div class="item-row">' +
+                        '<select class="form-select" onchange="updateItemTipo('+idx+',this.value)">' +
+                        TIPOS_ROUPA.map(function(t){
+                            return '<option value="'+t.id+'"'+(item.tipo===t.id?' selected':'')+'>'+t.nome+' ('+t.emb+')</option>';
+                        }).join('') +
+                        '</select>' +
+                        '<input type="number" class="form-input" min="1" max="9999" value="'+item.qtd+'" onchange="updateItemQtd('+idx+',+this.value)" oninput="updateItemQtd('+idx+',+this.value)">' +
+                        '<div class="form-input readonly" style="font-size:13px;color:var(--text-secondary);">'+fmtVol(volUnit)+' <small style="display:block;font-size:11px;">'+embInfo+'</small></div>' +
+                        '<button class="item-remove-btn" onclick="removeItem('+idx+')">&times;</button>' +
+                        '</div>';
+                }).join('');
+            }
+            updateVolumeSummary();
+            updateSideResult();
+        }
+
+        window.updateItemTipo = function(idx, val) { state.itens[idx].tipo = val; renderItens(); };
+        window.updateItemQtd  = function(idx, val) { if (val > 0) { state.itens[idx].qtd = val; updateVolumeSummary(); updateSideResult(); } };
+        window.removeItem     = function(idx) { state.itens.splice(idx, 1); renderItens(); };
+
+        document.getElementById('btnAddItem').addEventListener('click', function() {
+            state.itens.push({tipo: 'camiseta', qtd: 1});
+            renderItens();
+        });
+
+        /* ===== VOLUME ===== */
+        function calcVreal() {
+            return state.itens.reduce(function(acc, item) {
+                var tipo = getTipoById(item.tipo);
+                return acc + (tipo ? tipo.vol * item.qtd : 0);
+            }, 0);
+        }
+
+        function calcEmbalagensDesc() {
+            if (state.itens.length === 0) return '—';
+            var poly = 0, caixa = 0;
+            state.itens.forEach(function(item) {
+                var tipo = getTipoById(item.tipo);
+                if (!tipo) return;
+                if (tipo.emb === 'Polymailer') poly += item.qtd;
+                else caixa += Math.ceil(item.qtd / tipo.maxCaixa);
+            });
+            var parts = [];
+            if (poly > 0) parts.push(poly + ' Polymailer' + (poly > 1 ? 's' : ''));
+            if (caixa > 0) parts.push(caixa + ' Caixa' + (caixa > 1 ? 's' : ''));
+            return parts.length ? parts.join(' + ') : '—';
+        }
+
+        function updateVolumeSummary() {
+            var vreal = calcVreal();
+            document.getElementById('displayVreal').textContent = fmtVol(vreal);
+            document.getElementById('displayEmb').textContent = calcEmbalagensDesc();
+            var statusEl = document.getElementById('displayStatus');
+            if (state.itens.length === 0) { statusEl.innerHTML = ''; return; }
+            if (vreal > C.CAP_VOL) {
+                statusEl.innerHTML = '<span class="volume-tag warn"><span class="material-symbols-outlined" style="font-size:16px">warning</span> Excede veículo</span>';
+            } else if (vreal > C.V_BASE_CONSOL) {
+                statusEl.innerHTML = '<span class="volume-tag warn"><span class="material-symbols-outlined" style="font-size:16px">info</span> Carga alta</span>';
+            } else {
+                statusEl.innerHTML = '<span class="volume-tag ok"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span> Válido</span>';
+            }
+        }
+
+        /* ===== VEÍCULO ===== */
+        window.selecionarVeiculo = function(v) {
+            state.veiculo = v;
+            document.querySelectorAll('.veiculo-card').forEach(function(c) {
+                c.classList.toggle('selected', c.dataset.veiculo === v);
+            });
+        };
+
+        /* ===== SCORE ===== */
+        function calcScore() {
+            var urg = +document.getElementById('paramUrgencia').value;
+            var den = +document.getElementById('paramDensidade').value;
+            return (urg * 0.6) + (den * 0.4);
+        }
+        function updateScoreUI() {
+            var urg = +document.getElementById('paramUrgencia').value;
+            var den = +document.getElementById('paramDensidade').value;
+            document.getElementById('urgenciaVal').textContent = urg;
+            document.getElementById('densidadeVal').textContent = den;
+            var sp = (urg * 0.6) + (den * 0.4);
+            document.getElementById('scoreSp').textContent = sp.toFixed(1);
+            document.getElementById('scoreBar').style.width = ((sp / 10) * 100) + '%';
+        }
+        document.getElementById('paramUrgencia').addEventListener('input', updateScoreUI);
+        document.getElementById('paramDensidade').addEventListener('input', updateScoreUI);
+
+        /* ===== CEP via BrasilAPI ===== */
+        document.getElementById('cepDestino').addEventListener('input', function() {
+            var val = this.value.replace(/\D/g, '');
+            if (val.length > 5) val = val.slice(0,5) + '-' + val.slice(5,8);
+            this.value = val;
+        });
+        document.getElementById('btnBuscarCep').addEventListener('click', function() {
+            var cep = document.getElementById('cepDestino').value.replace(/\D/g,'');
+            if (cep.length !== 8) { showToast('CEP inválido', 'erro'); return; }
+            this.disabled = true;
+            var btn = this;
+            fetch('https://brasilapi.com.br/api/cep/v1/' + cep)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.state) {
+                        document.getElementById('ufDestino').value = data.state;
+                        document.getElementById('cidadeDestino').value = data.city || '';
+                        document.getElementById('bairroDestino').value = data.neighborhood || '';
+                        document.getElementById('enderecoDestino').value = data.street || '';
+                        updateSideResult();
+                        showToast('CEP encontrado: ' + data.city + '/' + data.state);
+                    } else {
+                        showToast('CEP não encontrado', 'erro');
+                    }
+                })
+                .catch(function() { showToast('Erro ao buscar CEP (verifique conexão)', 'erro'); })
+                .finally(function() { btn.disabled = false; });
+        });
+
+        /* ===== TABELA DE CAPITAIS ===== */
+        document.getElementById('btnDistCapital').addEventListener('click', function() {
+            var origem = document.getElementById('ufOrigem').value;
+            document.getElementById('capitalOrigemLabel').textContent = origem;
+            var t = document.getElementById('tabelaCapitais');
+            var distOrigem = DIST_TABLE[origem];
+            if (!distOrigem) { t.innerHTML = '<p style="color:var(--text-secondary)">Tabela não disponível para esta UF.</p>'; }
+            else {
+                t.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+                    '<thead><tr>' +
+                    '<th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);color:var(--text-secondary)">Destino</th>' +
+                    '<th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);color:var(--text-secondary)">Distância</th>' +
+                    '<th style="padding:8px;border-bottom:1px solid var(--border);"></th>' +
+                    '</tr></thead><tbody>' +
+                    Object.keys(distOrigem).filter(function(k){ return k !== origem; }).map(function(uf) {
+                        return '<tr><td style="padding:8px;color:var(--text-primary);">'+uf+'</td><td style="text-align:right;padding:8px;color:var(--accent-copper);font-weight:700;">'+distOrigem[uf]+' km</td>' +
+                            '<td style="padding:8px;"><button onclick="usarDistancia('+distOrigem[uf]+',\''+uf+'\')" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);cursor:pointer;font-family:inherit;font-size:12px;">Usar</button></td></tr>';
+                    }).join('') +
+                    '</tbody></table>';
+            }
+            document.getElementById('modalCapitais').classList.add('active');
+        });
+        window.usarDistancia = function(dist, uf) {
+            document.getElementById('distanciaKm').value = dist;
+            if (uf) document.getElementById('ufDestino').value = uf;
+            document.getElementById('modalCapitais').classList.remove('active');
+            updateSideResult();
+        };
+        document.getElementById('closeModalCapitais').addEventListener('click', function() {
+            document.getElementById('modalCapitais').classList.remove('active');
+        });
+        document.getElementById('modalCapitais').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        /* ===== CÁLCULO PRINCIPAL ===== */
+        function calcularFrete() {
+            var dist   = +document.getElementById('distanciaKm').value;
+            var ufDest = document.getElementById('ufDestino').value;
+            var ufOrig = document.getElementById('ufOrigem').value;
+            var veiculo = state.veiculo;
+            var veh = VEICULOS[veiculo];
+            var horario = document.getElementById('paramHorario').value;
+            var n       = +document.getElementById('paramN').value;
+            var margem  = +document.getElementById('paramMargem').value;
+            var tprep   = +document.getElementById('paramTprep').value;
+
+            if (!dist || dist <= 0) { showToast('Informe a distância em km', 'erro'); return null; }
+            if (!ufDest) { showToast('Selecione o estado de destino', 'erro'); return null; }
+
+            var vreal = calcVreal();
+
+            /* 8.1 Frete ANTT */
+            var freteANTT = dist * C.TAXA_ANTT;
+            /* 8.2 Valor motorista */
+            var valMoto   = freteANTT / 2;
+            /* 8.3 Pedágio */
+            var pedagio   = Math.floor(dist / 100) * C.PEDAGIO_UNIT;
+            /* 9.2 ICMS */
+            var icmsEntry = ICMS_TABLE[ufDest] || {int:0.12, int_est:0.12};
+            var aliqIcms  = ufOrig === ufDest ? icmsEntry.int : icmsEntry.int_est;
+            var icms      = valMoto * aliqIcms;
+            /* 9.1 PIS/COFINS */
+            var pis       = valMoto * C.PIS;
+            var cofins    = valMoto * C.COFINS;
+            /* 10.1 Total impostos */
+            var totalImp  = icms + pis + cofins;
+            /* 10.2 Frete com impostos */
+            var freteComImp = valMoto + totalImp;
+            /* 10.4 Frete Final */
+            var freteFinal  = (freteComImp * C.MARGEM_SEG) + pedagio + C.DESCARGA;
+            /* 11. Rateio */
+            var fpedido = freteFinal * (vreal / C.V_BASE_CONSOL);
+
+            /* 12. Preço cliente */
+            var mult = vreal <= 0.01 ? 1.5 : vreal <= 0.05 ? 1.2 : 1.0;
+            var precoCliente = fpedido * mult;
+            var freteGratis = false; // determinado pelo valor do pedido passado externamente; deixamos indicar abaixo
+
+            /* 5. Prazo de entrega */
+            var fhMap = {normal: {moto:0.9, van:0.7}, pico: {moto:0.85, van:0.5}, madrugada: {moto:1.0, van:1.0}};
+            var fh    = fhMap[horario][veiculo];
+            var vReal_km = veh.v * fh;                       // velocidade efetiva
+            var distReal  = dist * veh.krota;                // distância real percorrida
+            var tDeslocamento = distReal / vReal_km;         // horas
+            var tPortarias    = n * veh.ts;                  // horas
+            var ttotal        = tDeslocamento + tPortarias + tprep + margem;
+
+            /* Score prioridade */
+            var sp = calcScore();
+
+            return {
+                dist, ufDest, ufOrig, veiculo, vreal,
+                freteANTT, valMoto, pedagio, icms, pis, cofins, totalImp,
+                freteComImp, freteFinal, fpedido, mult, precoCliente,
+                aliqIcms, ttotal, sp, fh
+            };
+        }
+
+        /* ===== RENDERIZAR RESULTADO ===== */
+        function renderResultado(r) {
+            var html = '';
+
+            html += '<div class="aviso-box success"><span class="material-symbols-outlined" style="flex-shrink:0;">check_circle</span><div><strong>Cálculo concluído!</strong> Custo logístico real: <strong>' + fmt(r.fpedido) + '</strong> — Preço ao cliente: <strong>' + fmt(r.precoCliente) + '</strong></div></div>';
+
+            // Prazo
+            html += '<div style="margin-bottom:20px;">' +
+                '<div class="form-label">Prazo Estimado de Entrega</div>' +
+                '<div class="prazo-badge"><span class="material-symbols-outlined" style="font-size:18px;">schedule</span>' + fmtHoras(r.ttotal) + ' (' + (r.veiculo === 'moto' ? 'Motoboy' : 'Van/Fiorino') + ')</div>' +
+                '<div style="font-size:12px;color:var(--text-secondary);margin-top:8px;">Velocidade efetiva: ' + (r.dist ? ((r.dist * VEICULOS[r.veiculo].krota) / (VEICULOS[r.veiculo].v * r.fh)).toFixed(2) : '—') + 'h de deslocamento · Score de Prioridade Sp = ' + r.sp.toFixed(1) + '/10</div>' +
+                '</div>';
+
+            // Tabela de breakdown
+            html += '<div style="overflow-x:auto;">' +
+                '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+                '<thead><tr>' +
+                '<th style="text-align:left;padding:10px 8px;border-bottom:2px solid var(--border);color:var(--text-secondary);font-size:12px;text-transform:uppercase;">Componente</th>' +
+                '<th style="text-align:right;padding:10px 8px;border-bottom:2px solid var(--border);color:var(--text-secondary);font-size:12px;text-transform:uppercase;">Valor</th>' +
+                '<th style="text-align:right;padding:10px 8px;border-bottom:2px solid var(--border);color:var(--text-secondary);font-size:12px;text-transform:uppercase;">Detalhes</th>' +
+                '</tr></thead><tbody>';
+
+            function row(label, val, det, bold) {
+                return '<tr style="' + (bold ? 'font-weight:700;background:rgba(153,153,153,0.05);' : '') + '">' +
+                    '<td style="padding:10px 8px;border-bottom:1px solid var(--border);color:var(--text-primary);">' + label + '</td>' +
+                    '<td style="text-align:right;padding:10px 8px;border-bottom:1px solid var(--border);color:var(--accent-copper);font-weight:600;">' + val + '</td>' +
+                    '<td style="text-align:right;padding:10px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary);font-size:12px;">' + det + '</td>' +
+                    '</tr>';
+            }
+
+            html += row('Frete ANTT (base)',    fmt(r.freteANTT),    r.dist + 'km × R$3,8866');
+            html += row('Valor Motorista',       fmt(r.valMoto),      'ANTT ÷ 2');
+            html += row('Pedágio',               fmt(r.pedagio),      '⌊' + r.dist + '/100⌋ × R$20');
+            html += row('ICMS (' + (r.aliqIcms*100).toFixed(0) + '%)', fmt(r.icms), r.ufOrig + '→' + r.ufDest + (r.ufOrig===r.ufDest?' interno':' interestadual'));
+            html += row('PIS (1,65%)',            fmt(r.pis),          'motorista × 0,0165');
+            html += row('COFINS (7,6%)',          fmt(r.cofins),       'motorista × 0,076');
+            html += row('Total Impostos',         fmt(r.totalImp),     'ICMS + PIS + COFINS');
+            html += row('Frete c/ Impostos',      fmt(r.freteComImp),  'motorista + impostos');
+            html += row('Frete Final (viagem)',   fmt(r.freteFinal),   '×1,3015 + pedágio + descarga', true);
+            html += row('Volume Cobrável',        fmtVol(r.vreal),     'Vreal (otimizado)');
+            html += row('Rateio por Pedido (Custo Real)', fmt(r.fpedido), 'FreteF × ' + r.vreal.toFixed(5) + ' / 2,64', true);
+            html += row('Multiplicador Comercial', r.mult + 'x',       r.vreal <= 0.01 ? 'vol ≤ 0,01m³' : r.vreal <= 0.05 ? 'vol 0,01–0,05m³' : 'vol > 0,05m³');
+            html += '<tr style="font-weight:700;background:rgba(153,153,153,0.08);">' +
+                '<td style="padding:12px 8px;border-top:2px solid var(--border);color:var(--text-primary);font-size:15px;">💳 Preço ao Cliente</td>' +
+                '<td style="text-align:right;padding:12px 8px;border-top:2px solid var(--border);color:var(--accent-copper);font-size:16px;">' + fmt(r.precoCliente) + '</td>' +
+                '<td style="text-align:right;padding:12px 8px;border-top:2px solid var(--border);color:var(--text-secondary);font-size:12px;">custo × ' + r.mult + 'x</td></tr>';
+
+            html += '</tbody></table></div>';
+
+            if (r.precoCliente === 0 || /* frete grátis marcado manualmente */false) {
+                html += '<div class="result-frete-gratis" style="display:block;margin-top:16px;">🎉 Frete Grátis!</div>';
+            }
+
+            document.getElementById('resultContent').innerHTML = html;
+        }
+
+        /* ===== SIDE RESULT (em tempo real) ===== */
+        function updateSideResult() {
+            var vreal = calcVreal();
+            var totalItens = state.itens.reduce(function(acc,i){ return acc + i.qtd; }, 0);
+            var dist  = +document.getElementById('distanciaKm').value;
+            var uf    = document.getElementById('ufDestino').value;
+
+            document.getElementById('srItens').textContent    = totalItens > 0 ? totalItens + ' unidade(s)' : '—';
+            document.getElementById('srVolume').textContent   = vreal > 0 ? fmtVol(vreal) : '—';
+            document.getElementById('srDistancia').textContent = dist > 0 ? dist + ' km' : '—';
+            document.getElementById('srUF').textContent       = uf || '—';
+
+            if (state.resultado) {
+                document.getElementById('srCustoReal').textContent   = fmt(state.resultado.fpedido);
+                document.getElementById('srPrecoCliente').textContent = fmt(state.resultado.precoCliente);
+                document.getElementById('srPrazo').style.display = 'block';
+                document.getElementById('prazoTexto').textContent = fmtHoras(state.resultado.ttotal);
+                var gratis = state.resultado.precoCliente === 0;
+                document.getElementById('srFreteGratis').style.display = gratis ? 'block' : 'none';
+            } else {
+                document.getElementById('srCustoReal').textContent = '—';
+                document.getElementById('srPrecoCliente').textContent = '—';
+            }
+        }
+
+        /* ===== NAVEGAÇÃO ENTRE ETAPAS ===== */
+        function goStep(s) {
+            document.querySelectorAll('.frete-section').forEach(function(el, i) {
+                el.classList.toggle('active', i+1 === s);
+            });
+            // Stepper
+            for (var i = 1; i <= 3; i++) {
+                var stepEl = document.getElementById('step' + i);
+                stepEl.classList.remove('active', 'done');
+                if (i < s) stepEl.classList.add('done');
+                if (i === s) stepEl.classList.add('active');
+                // Check circle icon for done
+                var circle = stepEl.querySelector('.step-circle');
+                if (i < s) circle.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">check</span>';
+                else circle.textContent = i;
+            }
+            for (var j = 1; j <= 2; j++) {
+                var line = document.getElementById('line' + j + (j+1));
+                if (line) line.classList.toggle('done', j < s);
+            }
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        document.getElementById('btnStep1Next').addEventListener('click', function() {
+            if (state.itens.length === 0) { showToast('Adicione ao menos 1 item', 'erro'); return; }
+            goStep(2);
+        });
+        document.getElementById('btnStep2Back').addEventListener('click', function() { goStep(1); });
+        document.getElementById('btnCalcular').addEventListener('click', function() {
+            var r = calcularFrete();
+            if (!r) return;
+            state.resultado = r;
+            updateSideResult();
+            renderResultado(r);
+            goStep(3);
+        });
+        document.getElementById('btnNovoCalculo').addEventListener('click', function() {
+            state.itens = [];
+            state.resultado = null;
+            renderItens();
+            updateSideResult();
+            goStep(1);
+        });
+
+        /* Atualizar side quando campos de endereço mudam */
+        ['distanciaKm','ufDestino'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', updateSideResult);
+        });
+
+        /* ===== INIT ===== */
+        renderItens();
+        updateScoreUI();
+    })();
+    </script>
+</body>
+</html>
