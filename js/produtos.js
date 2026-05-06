@@ -4,6 +4,8 @@
     // ========================================
     // Dados dos Produtos
     // ========================================
+    var DADOS_VERSAO = '1.2';
+
     var PRODUTOS_PADRAO = [
         {
             id: 1,
@@ -14,7 +16,7 @@
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Preto',
             hex_color: '#1a1a1a',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1556906781-9a412961a28c?w=400&q=80',
             estoque: 15,
             esporte: 'corrida'
         },
@@ -27,7 +29,7 @@
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Cinza',
             hex_color: '#808080',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400&q=80',
             estoque: 22,
             esporte: 'academia'
         },
@@ -40,7 +42,7 @@
             tamanhos: ['P', 'M', 'G', 'GG', 'XG'],
             cor: 'Branco',
             hex_color: '#f5f5f5',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80',
             estoque: 40,
             esporte: 'corrida'
         },
@@ -53,7 +55,7 @@
             tamanhos: ['M', 'G', 'GG'],
             cor: 'Preto',
             hex_color: '#1a1a1a',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400&q=80',
             estoque: 18,
             esporte: 'corrida'
         },
@@ -66,7 +68,7 @@
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Azul Marinho',
             hex_color: '#1b2a4a',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&q=80',
             estoque: 30,
             esporte: 'academia'
         },
@@ -79,7 +81,7 @@
             tamanhos: ['P', 'M', 'G'],
             cor: 'Cinza',
             hex_color: '#808080',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',
             estoque: 25,
             esporte: 'academia'
         },
@@ -92,7 +94,7 @@
             tamanhos: ['P', 'M', 'G', 'GG'],
             cor: 'Verde Militar',
             hex_color: '#4b5320',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80',
             estoque: 12,
             esporte: 'corrida'
         },
@@ -105,7 +107,7 @@
             tamanhos: ['P', 'M', 'G'],
             cor: 'Preto',
             hex_color: '#1a1a1a',
-            imagem: '',
+            imagem: 'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&q=80',
             estoque: 35,
             esporte: 'academia'
         }
@@ -115,9 +117,12 @@
     // Gerenciamento de Produtos (localStorage)
     // ========================================
     function getProdutos() {
+        var versaoSalva = localStorage.getItem('tw_dados_versao');
         var saved = localStorage.getItem('tw_produtos');
-        if (saved) return JSON.parse(saved);
+        if (saved && versaoSalva === DADOS_VERSAO) return JSON.parse(saved);
+        // Versão desatualizada ou primeiro acesso: reinicia com os padrões
         localStorage.setItem('tw_produtos', JSON.stringify(PRODUTOS_PADRAO));
+        localStorage.setItem('tw_dados_versao', DADOS_VERSAO);
         return PRODUTOS_PADRAO;
     }
 
