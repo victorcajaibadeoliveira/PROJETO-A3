@@ -300,6 +300,11 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-db.js"></script>
     <script src="js/produtos.js"></script>
     <script src="js/templatemo-crypto-script.js"></script>
     <script>
@@ -386,34 +391,40 @@
 
         window.deletarProduto = function(id) {
             if (!confirm('Deseja excluir este produto?')) return;
-            TechWear.removerProduto(id);
-            renderAll();
-            showToast('Produto removido');
+            TechWearDB.removerProduto(id).then(function() {
+                renderAll();
+                showToast('Produto removido');
+            }).catch(function() {
+                showToast('Erro ao remover produto');
+            });
         };
 
         /* ---- Upload foto ADD ---- */
-        var fotoAddBase64 = '';
+        var fotoAddFile = null;
+        var fotoAddUrl = '';
         document.getElementById('adminImagem').addEventListener('change', function() {
             var file = this.files[0];
             if (!file) return;
+            fotoAddFile = file;
             var reader = new FileReader();
             reader.onload = function(e) {
-                fotoAddBase64 = e.target.result;
-                document.getElementById('uploadPreviewImg').src = fotoAddBase64;
+                document.getElementById('uploadPreviewImg').src = e.target.result;
                 document.getElementById('uploadArea').style.display = 'none';
                 document.getElementById('uploadPreview').style.display = 'flex';
             };
             reader.readAsDataURL(file);
         });
         window.removerFotoAdd = function() {
-            fotoAddBase64 = '';
+            fotoAddFile = null;
+            fotoAddUrl = '';
             document.getElementById('adminImagem').value = '';
             document.getElementById('uploadArea').style.display = 'flex';
             document.getElementById('uploadPreview').style.display = 'none';
         };
 
         /* ---- Modal Editar ---- */
-        var fotoEditBase64 = '';
+        var fotoEditFile = null;
+        var fotoEditUrl = '';
         window.abrirEditar = function(id) {
             var p = TechWear.getProdutoPorId(id);
             if (!p) return;
@@ -429,9 +440,10 @@
             document.getElementById('editEsporte').value = p.esporte || '';
             document.getElementById('editTamanhos').value = (p.tamanhos || []).join(', ');
             document.getElementById('editDesc').value = p.descricao || '';
-            fotoEditBase64 = p.imagem || '';
-            if (fotoEditBase64) {
-                document.getElementById('editUploadPreviewImg').src = fotoEditBase64;
+            fotoEditFile = null;
+            fotoEditUrl = p.imagem || '';
+            if (fotoEditUrl) {
+                document.getElementById('editUploadPreviewImg').src = fotoEditUrl;
                 document.getElementById('editUploadArea').style.display = 'none';
                 document.getElementById('editUploadPreview').style.display = 'flex';
             } else {
@@ -454,17 +466,18 @@
         document.getElementById('editImagem').addEventListener('change', function() {
             var file = this.files[0];
             if (!file) return;
+            fotoEditFile = file;
             var reader = new FileReader();
             reader.onload = function(e) {
-                fotoEditBase64 = e.target.result;
-                document.getElementById('editUploadPreviewImg').src = fotoEditBase64;
+                document.getElementById('editUploadPreviewImg').src = e.target.result;
                 document.getElementById('editUploadArea').style.display = 'none';
                 document.getElementById('editUploadPreview').style.display = 'flex';
             };
             reader.readAsDataURL(file);
         });
         window.removerFotoEdit = function() {
-            fotoEditBase64 = '';
+            fotoEditFile = null;
+            fotoEditUrl = '';
             document.getElementById('editImagem').value = '';
             document.getElementById('editUploadArea').style.display = 'flex';
             document.getElementById('editUploadPreview').style.display = 'none';
@@ -477,7 +490,10 @@
             var estoque = parseInt(document.getElementById('editEstoque').value);
             if (!nome || isNaN(preco) || isNaN(estoque)) { showToast('Preencha nome, preço e estoque'); return; }
             var tamanhos = document.getElementById('editTamanhos').value.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
-            TechWear.editarProduto(id, {
+            var btn = document.getElementById('editSalvar');
+            btn.disabled = true;
+            btn.textContent = 'Salvando...';
+            var dados = {
                 nome: nome,
                 categoria: document.getElementById('editCategoria').value,
                 preco: preco,
@@ -486,12 +502,17 @@
                 hex_color: document.getElementById('editHexColor').value.trim() || '#808080',
                 esporte: document.getElementById('editEsporte').value,
                 tamanhos: tamanhos.length > 0 ? tamanhos : ['P', 'M', 'G'],
-                descricao: document.getElementById('editDesc').value.trim(),
-                imagem: fotoEditBase64
-            });
-            fecharEditar();
-            renderAll();
-            showToast('Produto atualizado!');
+                descricao: document.getElementById('editDesc').value.trim()
+            };
+            if (!fotoEditFile && fotoEditUrl) dados.imagem = fotoEditUrl;
+            TechWearDB.editarProduto(id, dados, fotoEditFile || null)
+                .then(function() {
+                    fecharEditar();
+                    renderAll();
+                    showToast('Produto atualizado!');
+                })
+                .catch(function() { showToast('Erro ao salvar produto'); })
+                .finally(function() { btn.disabled = false; btn.textContent = 'Salvar Alterações'; });
         });
 
         document.getElementById('btnAddProduto').addEventListener('click', function() {
@@ -500,7 +521,10 @@
             var estoque = parseInt(document.getElementById('adminEstoque').value);
             if (!nome || isNaN(preco) || isNaN(estoque)) { showToast('Preencha nome, preço e estoque'); return; }
             var tamanhos = document.getElementById('adminTamanhos').value.split(',').map(function(t) { return t.trim(); }).filter(function(t) { return t; });
-            TechWear.adicionarProduto({
+            var btn = document.getElementById('btnAddProduto');
+            btn.disabled = true;
+            btn.textContent = 'Adicionando...';
+            TechWearDB.adicionarProduto({
                 nome: nome,
                 descricao: document.getElementById('adminDesc').value.trim(),
                 preco: preco,
@@ -509,23 +533,27 @@
                 cor: document.getElementById('adminCor').value.trim() || 'Preto',
                 hex_color: document.getElementById('adminHexColor').value.trim() || '#808080',
                 esporte: document.getElementById('adminEsporte').value,
-                imagem: fotoAddBase64,
+                imagem: fotoAddUrl,
                 estoque: estoque
-            });
-            document.getElementById('adminNome').value = '';
-            document.getElementById('adminPreco').value = '';
-            document.getElementById('adminEstoque').value = '';
-            document.getElementById('adminDesc').value = '';
-            document.getElementById('adminCor').value = '';
-            document.getElementById('adminHexColor').value = '';
-            document.getElementById('adminHexPicker').value = '#808080';
-            removerFotoAdd();
-            renderAll();
-            showToast('Produto adicionado!');
+            }, fotoAddFile || null)
+                .then(function() {
+                    document.getElementById('adminNome').value = '';
+                    document.getElementById('adminPreco').value = '';
+                    document.getElementById('adminEstoque').value = '';
+                    document.getElementById('adminDesc').value = '';
+                    document.getElementById('adminCor').value = '';
+                    document.getElementById('adminHexColor').value = '';
+                    document.getElementById('adminHexPicker').value = '#808080';
+                    removerFotoAdd();
+                    renderAll();
+                    showToast('Produto adicionado!');
+                })
+                .catch(function() { showToast('Erro ao adicionar produto'); })
+                .finally(function() { btn.disabled = false; btn.textContent = 'Adicionar Produto'; });
         });
 
         function renderAll() { renderStats(); renderProdutos(); renderPedidos(); }
-        renderAll();
+        TechWearDB.init(function() { renderAll(); });
     })();
     </script>
 </body>
